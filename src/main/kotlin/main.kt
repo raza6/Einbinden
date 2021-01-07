@@ -1,42 +1,43 @@
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import java.awt.Toolkit
 
+@ExperimentalLayout
 fun main() = Window(
     title = "Einbinden",
     size = IntSize(Toolkit.getDefaultToolkit().screenSize.width/2, Toolkit.getDefaultToolkit().screenSize.height/2)
 ) {
-    MaterialTheme (
-
-    ) {
+    MaterialTheme {
         Surface (
             color = Color(65, 68, 171)
-                ) {
+        ) {
             mainLayout()
         }
     }
 
     val scr = Scraper()
-    scr.getSeriesUrlFromLetter("azimut")
-    scr.getSeries("https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy.html")
-    scr.getSeries("https://www.bedetheque.com/serie-9-BD-Spirou-et-Fantasio.html")
+    println(scr.getSeriesUrlFromLetter("azimut"))
+    println(scr.getSeriesCoverFromUrl("https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy.html"))
+    scr.getSeriesComicFromUrl("https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy.html")
+    scr.getSeriesComicFromUrl("https://www.bedetheque.com/serie-9-BD-Spirou-et-Fantasio.html")
 }
 
+@ExperimentalLayout
 @Composable
 fun mainLayout() {
-    var panel: MutableState<Int> = mutableStateOf(0)
+    var panel = remember { mutableStateOf(0) }
     Row (
         modifier = Modifier.fillMaxSize()
     ) {
@@ -97,14 +98,11 @@ fun mainLayout() {
     }
 }
 
+@ExperimentalLayout
 @Composable
 fun rightLayout(panel: MutableState<Int>) {
     when (panel.value) {
-        2 -> Button(
-            onClick = {}
-        ) {
-            Text("Collection2")
-        }
+        2 -> searchPanel(Scraper())
         3 -> Button(
             onClick = {}
         ) {
@@ -115,5 +113,63 @@ fun rightLayout(panel: MutableState<Int>) {
         ) {
             Text("Collection1")
         }
+    }
+}
+
+@ExperimentalLayout
+@Composable
+fun searchPanel(scrap: Scraper) {
+    val comicName = remember { mutableStateOf(TextFieldValue(""))}
+    val seriesSearched = remember { mutableStateListOf<Series>()}
+
+    Column (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.align(Alignment.CenterHorizontally).widthIn(max = 300.dp),
+            value = comicName.value,
+            onValueChange = { comicName.value = it },
+            singleLine = true,
+            textStyle = TextStyle( color = Color.White ),
+            label = {Text(
+                text = "Rechercher une BD",
+                color = Color.White
+            )},
+            trailingIcon = {
+                Button (
+                    modifier = Modifier.width(50.dp),
+                    elevation = null,
+                    colors = ButtonConstants.defaultButtonColors(
+                        backgroundColor = Color(0, 0, 0, 50),
+                        contentColor = Color.Transparent
+                    ),
+                    onClick = {
+                        seriesSearched.clear()
+                        seriesSearched += scrap.getSeriesUrlFromLetter(comicName.value.text)
+                        for (series in seriesSearched) {
+                            series.coverUrl = scrap.getSeriesCoverFromUrl(series.url)
+                        }
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        tint = Color.White
+                    )
+                }
+            },
+            inactiveColor = Color.LightGray,
+            activeColor = Color.White
+        )
+        FlowRow {
+            seriesSearched.map {
+                CardSeries(it)
+            }
+        }
+    }
+}
+
+@Composable
+fun CardSeries(currentSeries: Series) {
+    Card {
+        Text( text = currentSeries.coverUrl)
     }
 }

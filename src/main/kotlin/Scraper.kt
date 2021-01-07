@@ -8,23 +8,53 @@ import it.skrape.skrape
 import java.text.SimpleDateFormat
 
 class Scraper {
-    fun getSeriesUrlFromLetter(letters: String) {
-        val extracted: List<String> = skrape(HttpFetcher) {
+    fun getSeriesUrlFromLetter(letters: String): List<Series> {
+        val extracted: Map<String, String> = skrape(HttpFetcher) {
             request {
-                url = "https://www.bedetheque.com/bandes_dessinees_${letters}.html"
+                url = "https://www.bedetheque.com/bandes_dessinees_${letters.split(" ")[0]}.html"
             }
 
             extract {
                 htmlDocument {
+                    relaxed = true
                     ul {
                         withClass = "nav-liste"
                         li {
-                            findAll {
-                                a {
+                            a {
+                                findAll {
                                     map {
-                                        span {
-                                            withClass = "libelle"
-                                            eachText
+                                        it.text to it.attribute("href")
+                                    }.toMap()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return extracted.map { Series(name = it.key, url = it.value) }
+    }
+
+    fun getSeriesCoverFromUrl(urlSearch: String): String {
+        val extracted:String = skrape(HttpFetcher) {
+            request {
+                url = urlSearch
+            }
+
+            extract {
+                htmlDocument {
+                    relaxed = true
+                    ul {
+                        withClass = "liste-albums"
+                        li {
+                            findFirst {
+                                div {
+                                    withClass = "couv"
+                                    img {
+                                        withAttribute = "itemprop" to "image"
+                                        findFirst {
+                                            this.attribute("src")
                                         }
                                     }
                                 }
@@ -35,15 +65,10 @@ class Scraper {
             }
         }
 
-        print(extracted);
+        return extracted
     }
 
-    data class Series(
-            var name: String = "",
-            var comics: List<Comic> = listOf()
-    )
-
-    fun getSeries(urlSearch: String) {
+    fun getSeriesComicFromUrl(urlSearch: String) {
         val extracted = skrape(HttpFetcher) {
             request {
                 url = urlSearch.replace(".html", "__10000.html")
@@ -52,6 +77,7 @@ class Scraper {
             extractIt<Series> {
                 it ->
                 htmlDocument {
+                    relaxed = true
                     it.name = h1 {
                         a {
                             findFirst {
@@ -185,6 +211,6 @@ class Scraper {
             }
         }
 
-        println(extracted);
+        println(extracted)
     }
 }
