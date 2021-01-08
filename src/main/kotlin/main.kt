@@ -1,4 +1,6 @@
 import androidx.compose.desktop.Window
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.*
@@ -8,11 +10,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import org.apache.commons.io.FileUtils
 import java.awt.Toolkit
+import java.io.File
+import java.net.URL
+import java.nio.file.Paths
+import javax.imageio.ImageIO
 
 @ExperimentalLayout
 fun main() = Window(
@@ -26,6 +37,8 @@ fun main() = Window(
             mainLayout()
         }
     }
+
+
 
     val scr = Scraper()
     println(scr.getSeriesUrlFromLetter("azimut"))
@@ -170,6 +183,19 @@ fun searchPanel(scrap: Scraper) {
 @Composable
 fun CardSeries(currentSeries: Series) {
     Card {
-        Text( text = currentSeries.coverUrl)
+        Column (Modifier.clickable(onClick = {println("sex")} )) {
+            loadPicture(currentSeries.coverUrl, currentSeries.name.filter { it.isLetterOrDigit() })
+        }
+        //Text( text = currentSeries.coverUrl)
+    }
+}
+
+@Composable
+fun loadPicture(url: String, name: String) {
+    val imageFile: File? = File("src/img/${name}.jpg");
+    val imageImage = ImageIO.read(URL(url));
+    ImageIO.write(imageImage, "jpg", imageFile);
+    if (imageFile != null) {
+        Image(org.jetbrains.skija.Image.makeFromEncoded(imageFile.readBytes()).asImageBitmap())
     }
 }

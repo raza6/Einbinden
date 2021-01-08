@@ -11,9 +11,11 @@ group = "me.bobby"
 version = "1.0"
 
 repositories {
+    google()
     jcenter()
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -22,6 +24,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
     implementation(compose.desktop.currentOs)
     implementation("it.skrape:skrapeit-core:1.0.0-alpha8")
+    implementation("commons-io:commons-io:2.6")
 }
 
 tasks.test {
