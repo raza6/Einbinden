@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6", 
+    "module": "commonjs", 
+    "sourceMap": true, 
+    "outDir": "./dist", 
+    "strict": true, 
+    "moduleResolution": "node", 
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true
+  },
+  "include": ["./**/*"],
+  "ts-node": {
+    "files": true
+  },
+  "files": [
+    "./global.d.ts"
+  ],
+}
