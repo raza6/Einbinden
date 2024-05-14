@@ -13,3 +13,13 @@ users.createIndex(
 );
 
 const books = db.getCollection('Books');
+books.createIndex(
+  {
+    'title': 'text',
+  }, {
+    weights: {
+      'title': 1,
+    },
+    name: 'textBooksIndex'
+  }
+);

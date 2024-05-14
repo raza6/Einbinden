@@ -5,6 +5,7 @@ import colors from 'colors';
 import { NoCollectionError } from '../utils/utils';
 import EnvWrap from '../utils/envWrapper';
 import { User } from '../types/user';
+import { Book } from '../types/books';
 
 export default class MongoDB {
   public static dbName = 'Einbinden';
@@ -95,6 +96,12 @@ export default class MongoDB {
   public async addUser(user: User): Promise<void> {
     await this.run(
       () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionUsers).insertOne(user),
+    );
+  }
+
+  public async addBook(book: Book): Promise<void> {
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).insertOne(book),
     );
   }
 }

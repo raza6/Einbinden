@@ -9,6 +9,7 @@ import githubAuthConfig from './auth/githubAuthConfig';
 import authController from './controllers/authController';
 import MongoDB from './mongo/mongo';
 import MongoStore from 'connect-mongo';
+import bookController from './controllers/bookController';
 
 const init = async (): Promise<void> => {
   const serv = express();
@@ -54,6 +55,7 @@ const init = async (): Promise<void> => {
 
   // Set routes
   authController(serv, passport);
+  bookController(serv);
 
   // Set Einbinden online
   serv.listen(PORT);

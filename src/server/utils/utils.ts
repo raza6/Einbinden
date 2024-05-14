@@ -7,6 +7,13 @@ class NoCollectionError extends Error {
   }
 }
 
+class NoBookError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NoBookError';
+  }
+}
+
 function ensureAuthenticated(req: Request, res: Response, next: Function) {
   if (req.isAuthenticated()) {
     return next();
@@ -14,4 +21,4 @@ function ensureAuthenticated(req: Request, res: Response, next: Function) {
   return res.sendStatus(401);
 }
 
-export { NoCollectionError, ensureAuthenticated };
+export { NoCollectionError, NoBookError, ensureAuthenticated };
