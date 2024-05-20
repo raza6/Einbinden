@@ -1,0 +1,186 @@
+@import "~bootstrap/scss/bootstrap";
+
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 200;
+  src: local('Nunito'), url(./fonts/Nunito-ExtraLight.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 300;
+  src: local('Nunito'), url(./fonts/Nunito-Light.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url(./fonts/Nunito-Regular.ttf) format('truetype');
+}  
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 500;
+  src: local('Nunito'), url(./fonts/Nunito-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 600;
+  src: local('Nunito'), url(./fonts/Nunito-SemiBold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 700;
+  src: local('Nunito'), url(./fonts/Nunito-Bold.ttf) format('truetype');
+}  
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 800;
+  src: local('Nunito'), url(./fonts/Nunito-ExtraBold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 900;
+  src: local('Nunito'), url(./fonts/Nunito-Black.ttf) format('truetype');
+}
+
+:root {
+  --ebd-blue:#0d6efd;
+  --ebd-indigo:#6610f2;
+  --ebd-purple:#6f42c1;
+  --ebd-pink:#d63384;
+  --ebd-red:#dc3545;
+  --ebd-orange:#fd7e14;
+  --ebd-yellow:#ffc107;
+  --ebd-green:#198754;
+  --ebd-teal:#20c997;
+  --ebd-cyan:#0dcaf0;
+  --ebd-gray:#757575;
+  --ebd-gray-dark:#4f4f4f;
+  --ebd-primary:#1266f1;
+  --ebd-secondary:#b23cfd;
+  --ebd-success:#00b74a;
+  --ebd-info:#39c0ed;
+  --ebd-warning:#ffa900;
+  --ebd-danger:#c31030;
+  --ebd-white:#fff;
+  --ebd-black:#000;
+
+  --ebd-light-lighter:#fffcf6;
+  --ebd-light-base:#ecdbba;
+  --ebd-light-base2:#d6c8aa;
+  --ebd-light-darker:#a98d58;
+  --ebd-dark-lighter:#2c2c2c;
+  --ebd-dark-lighter2:#242424;
+  --ebd-dark-base:#161616;
+  --ebd-dark-darker:#070707;
+  --ebd-theme:#c84b31;
+  --ebd-accent:#346751;
+
+  --bs-body-color: var(--ebd-light-base);
+  --bs-link-color: var(--ebd-light-base);
+  --bs-border-color: var(--ebd-dark-lighter);
+  --bs-link-hover-color: var(--ebd-theme);
+  
+  .modal {
+    --bs-modal-bg: var(--ebd-dark-base);
+  }
+
+  .offcanvas {
+    --bs-offcanvas-color: var(--ebd-light-base);
+    --bs-offcanvas-bg: var(--ebd-dark-base);
+
+    .offcanvas-header .btn-close {
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20fill%3D%27%23ecdbba%27%3E%3Cpath%20d%3D%27M.293.293a1%201%200%200%201%201.414%200L8%206.586%2014.293.293a1%201%200%201%201%201.414%201.414L9.414%208l6.293%206.293a1%201%200%200%201-1.414%201.414L8%209.414l-6.293%206.293a1%201%200%200%201-1.414-1.414L6.586%208%20.293%201.707a1%201%200%200%201%200-1.414z%27%2F%3E%3C%2Fsvg%3E");
+    
+      &:focus {
+        box-shadow: none;
+      }
+    }
+  }
+
+  .btn-primary {
+    --bs-btn-color: var(--ebd-light-base);
+    --bs-btn-bg: var(--ebd-dark-lighter);
+    --bs-btn-border-color: var(--ebd-dark-lighter);
+    --bs-btn-hover-color: var(--ebd-light-base);
+    --bs-btn-hover-bg: var(--ebd-dark-lighter2);
+    --bs-btn-hover-border-color: var(--ebd-dark-lighter2);
+    --bs-btn-active-color: var(--ebd-light-base);
+    --bs-btn-active-bg: var(--ebd-dark-lighter2);
+    --bs-btn-active-border-color: var(--ebd-dark-lighter2);
+  }
+
+  .btn-secondary {
+    --bs-btn-color: var(--ebd-black);
+    --bs-btn-bg: var(--ebd-light-base);
+    --bs-btn-border-color: var(--ebd-light-base);
+    --bs-btn-hover-color: var(--ebd-black);
+    --bs-btn-hover-bg: var(--ebd-light-base2);
+    --bs-btn-hover-border-color: var(--ebd-light-base2);
+    --bs-btn-active-color: var(--ebd-black);
+    --bs-btn-active-bg: var(--ebd-light-base2);
+    --bs-btn-active-border-color: var(--ebd-light-base2);
+  }
+
+  .btn {
+    &:focus-visible {
+      box-shadow: 0 0 0 0.25rem rgb(44 44 44 / 25%);
+    }
+
+    &:disabled {
+      background-color: var(--ebd-gray);
+      border-color: var(--ebd-gray);
+    }
+  }
+
+  .form-control {
+    background-color: var(--ebd-dark-lighter);
+    border-color: var(--ebd-dark-lighter);
+    color: var(--ebd-light-base);
+
+    &:focus {
+      box-shadow: 0 0 0 0.25rem rgb(44 44 44 / 25%);
+    }
+  }
+
+  .form-select {
+    color: var(--ebd-light-base);
+    background-color: var(--ebd-dark-lighter);
+    border-color: var(--ebd-dark-lighter);
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%3E%3Cpath%20fill%3D%27none%27%20stroke%3D%27%23ecdbba%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke-width%3D%272%27%20d%3D%27m2%205%206%206%206-6%27%2F%3E%3C%2Fsvg%3E");
+  
+    &:focus {
+      box-shadow: 0 0 0 0.25rem rgb(44 44 44 / 25%);
+    }
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  background-color: var(--ebd-dark-base);
+}
+
+html, #root, .app, .app > .row {
+  height: 100%;
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
