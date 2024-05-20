@@ -1,11 +1,12 @@
 import {
-  MongoClient, MongoError,
+  MongoClient, MongoError, FindCursor,
+  Sort
 } from 'mongodb';
 import colors from 'colors';
 import { NoCollectionError } from '../utils/utils';
 import EnvWrap from '../utils/envWrapper';
 import { User } from '../types/user';
-import { Book } from '../types/books';
+import { Book, BookSearchResponse } from '../types/books';
 
 export default class MongoDB {
   public static dbName = 'Einbinden';
@@ -103,5 +104,43 @@ export default class MongoDB {
     await this.run(
       () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).insertOne(book),
     );
+  }
+
+  public async deleteBook(isbn: string): Promise<void> {
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).deleteOne({ isbn: isbn }),
+    );
+  }
+
+  public async searchBook(
+    term: string,
+    pageIndex = 0,
+    pageSize = 20,
+  ): Promise<BookSearchResponse> {
+    const searchParam = term === '' ? {} : { $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: term } }] };
+    const projectParam = { _id: 0 };
+    const sortParam = term === '' ? { 'title': 1, 'subtitle': 1 } : { score: { $meta: 'textScore' } };
+
+    const result = <Array<Book>><unknown> await this.run(
+      () => {
+        const cursor = <FindCursor><unknown> this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks)
+          .find(searchParam)
+          .project(projectParam)
+          .sort(<Sort><unknown>sortParam)
+          .skip(pageIndex * pageSize)
+          .limit(pageSize);
+
+        return cursor.toArray();
+      },
+    );
+
+    const countResult = <number><unknown> await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).countDocuments(searchParam),
+    );
+
+    return {
+      books: result,
+      count: countResult,
+    };
   }
 }

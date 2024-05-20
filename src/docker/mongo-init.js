@@ -13,12 +13,19 @@ users.createIndex(
 );
 
 const books = db.getCollection('Books');
+books.createIndex( { "isbn": 1 }, { unique: true } );
+books.createIndex(
+  { 'title': 1 },
+  { name: 'regexSearchIndex' }
+);
 books.createIndex(
   {
     'title': 'text',
+    'subtitle': 'text'
   }, {
     weights: {
-      'title': 1,
+      'title': 3,
+      'subtitle': 1
     },
     name: 'textBooksIndex'
   }

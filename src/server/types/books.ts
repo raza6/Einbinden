@@ -1,6 +1,7 @@
 interface Book {
   isbn: string;
   title: string;
+  subtitle: string | null;
   authors: Array<string>;
   publisher: string;
   publishedDate: string;
@@ -8,6 +9,19 @@ interface Book {
   hasIsbn: boolean;
 }
 
+interface BookSearchResponse {
+  books: Array<Book>;
+  count: number;
+}
+
+interface BookRequest {
+  searchTerm: string;
+  pageSize: number;
+  pageIndex: number;
+}
+
 export type {
-  Book
+  Book,
+  BookRequest,
+  BookSearchResponse
 };
