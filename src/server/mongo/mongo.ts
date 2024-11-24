@@ -112,6 +112,12 @@ export default class MongoDB {
     );
   }
 
+  public async checkBook(isbn: string): Promise<boolean> {
+    return await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).countDocuments({ isbn: isbn })
+    ) === 1;
+  }
+
   public async searchBook(
     term: string,
     pageIndex = 0,

@@ -1,6 +1,6 @@
 class ISBNParseError extends Error {
   constructor(message: string) {
-    super(message);
+    super(`${message} is not a valid ISBN`);
     this.name = 'ISBNParseError';
   }
 }

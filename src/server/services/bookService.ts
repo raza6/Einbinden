@@ -7,10 +7,15 @@ export default class bookService {
   public static async addBookViaIsbn(isbn: string): Promise<Book | null> {
     try {
       const isbnParsed = parseISBN(isbn);
-      const book = await externalBooksService.getByISBN(isbnParsed);
       const mongo = new MongoDB();
-      await mongo.addBook(book);
-      return book;
+      if (await mongo.checkBook(isbn)) {
+        console.log(`🧨 Book already present (ISBN : ${isbn})`);
+        return null;
+      } else {
+        const book = await externalBooksService.getByISBN(isbnParsed);
+        await mongo.addBook(book);
+        return book;
+      }
     } catch (error) {
       console.log(`🧨 Book not added, reason : ${(<Error>error).message}`);
       return null;

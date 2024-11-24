@@ -1,11 +1,11 @@
 interface Book {
   isbn: string;
   title: string;
-  subtitle: string | null;
+  subtitle: string | undefined;
   authors: Array<string>;
-  publisher: string;
+  publisher: string | undefined;
   publishedDate: string;
-  cover: string;
+  cover: string | undefined;
   hasIsbn: boolean;
 }
 
