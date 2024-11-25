@@ -29,4 +29,8 @@ function useDebounce(callback: Function) {
   return debouncedCallback;
 }
 
-export { debounce, useDebounce };
+function getRandomOfList (list: Array<string>): string {
+  return list[Math.floor((Math.random()*list.length))];
+}
+
+export { debounce, useDebounce, getRandomOfList };
