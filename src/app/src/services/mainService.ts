@@ -19,7 +19,7 @@ class MainService {
         axiosResponse = await axios.get(url, logCong);
         break;
       case EHttpVerb.POST:
-        axiosResponse =await axios.post(url, data, logCong);
+        axiosResponse = await axios.post(url, data, logCong);
         break;
       case EHttpVerb.PUT:
         axiosResponse = await axios.put(url, data, logCong);

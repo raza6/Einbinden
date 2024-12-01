@@ -15,7 +15,7 @@ class NoBookError extends Error {
 }
 
 function ensureAuthenticated(req: Request, res: Response, next: Function) {
-  if (req.isAuthenticated() || true) {
+  if (req.isAuthenticated()) {
     return next();
   }
   return res.sendStatus(401);

@@ -10,6 +10,8 @@ import NotFound from './views/notFound/NotFound';
 import Logout from './views/auth/logout/Logout';
 import Login from './views/auth/login/Login';
 import Home from './views/home/Home';
+import Settings from './views/settings/Settings';
+import BookAdd from './views/bookAdd/BookAdd';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -33,16 +35,19 @@ function App() {
     <AuthContext.Provider value={loggedIn}>
       <Container fluid className="app" id="mainWrapper">
         <Row id="navbar">
-          <Link to="/app" className="laptop">
+          <Link to="/app" className="laptop mainTitleWrapper">
             <Image alt="Einbinden" src={`${process.env.PUBLIC_URL}/einbinden.png`}></Image>
+            <div className="titleWrapper">
+              <h1>Einbinden</h1>
+              <span>All yours books, right there, right now</span>
+            </div>
           </Link>
-          <div className="titleWrapper">
-            <h1>Einbinden</h1>
-          </div>
           <div className="laptop" id="laptopMenuWrapper">
             <span className="metaWrapper">
               {loggedIn ? <Row className="userWrapper">
-                <Image alt="Photo de l'utilisateur" src={user?.avatar}></Image>
+                <Link to="/app/settings">
+                  <Image alt="Photo de l'utilisateur" src={user?.avatar}></Image>
+                </Link>
               </Row>
                 : <span>Déconnecté</span>}
               <a href="https://github.com/raza6/Einbinden">{appName} v{appVersion}</a>
@@ -52,6 +57,8 @@ function App() {
         <div id="appWrapper">
           <Routes>
             <Route index path="/app" element={<Home pageName={setPageName}/>}></Route>
+            <Route path="/app/bookAdd" element={<BookAdd pageName={setPageName}/>}></Route>
+            <Route path="/app/settings" element={<Settings pageName={setPageName}/>}></Route>
             <Route path="/app/login" element={<Login pageName={setPageName}/>}></Route>
             <Route path="/app/logout" element={<Logout pageName={setPageName} logoutCallback={handleLoginCheck}/>}></Route>
             <Route path="/app/*" element={<NotFound pageName={setPageName}/>} />
