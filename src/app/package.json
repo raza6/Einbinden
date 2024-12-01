@@ -17,6 +17,7 @@
     "axios": "^0.26.0",
     "bootstrap": "^5.2.1",
     "react": "^18.2.0",
+    "react-barcode-scanner": "^3.0.1",
     "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",

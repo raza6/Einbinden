@@ -1,0 +1,32 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+
+.bookAddWrapper {
+  height: calc(100vh - 110px);
+
+  .titleWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .videoWrapper {
+    height: calc(100% - 124px);
+  }
+
+  .toast {
+    margin: 12px;
+    
+    .toast-header {
+      --bs-toast-header-bg: rgba(33, 37, 41, 0.85);
+      --bs-toast-header-color: var(--bs-toast-color);
+      justify-content: space-between;
+  
+      button {
+        filter: invert(1);
+      }
+    }
+  }
+}
