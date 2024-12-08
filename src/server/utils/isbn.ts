@@ -11,14 +11,20 @@ function checkControlKeyISBN(isbn: string): boolean {
     const sum = 
       [...Array(isbn.length).keys()].reverse().slice(0, -1).map(v => v+1)
       .reduce((acc, v, i) => acc + (v * (+isbn[i])), 0);
-    const key = (11 - (sum % 11)) % 11;
+    let key = (11 - (sum % 11)) % 11;
+    if (key === 11) {
+      key = 0;
+    }
     return key === +isbn[isbn.length - 1];
   // isbn 13 -> modulus 10 with alternate 1/3 weight
   } else {
     const sum = 
       [...Array(isbn.length - 1)].map((v, i) => i % 2 === 0 ? 1 : 3)
       .reduce((acc, v, i) => acc + (v * (+isbn[i])), 0);
-    const key = 10 - (sum % 10);
+    let key = 10 - (sum % 10);
+    if (key === 10) {
+      key = 0;
+    }
     return key === +isbn[isbn.length - 1];
   }
 }
