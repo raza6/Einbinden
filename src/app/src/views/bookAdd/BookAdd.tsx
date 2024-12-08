@@ -20,7 +20,7 @@ function BookAdd(props: GenProps) {
   const addBook = async (barcodes: (DetectedBarcode & { quality?: number})[]): Promise<void> => {
     console.log('Barcode detected');
     // @ts-ignore
-    const barcode = barcodes.filter(code => code.quality > 10).sort((a, b) => a.quality - b.quality)?.[0];
+    const barcode = barcodes.filter(code => code.quality ? code.quality > 10 : true).sort((a, b) => a.quality - b.quality)?.[0];
     if (barcode && !usedBarcodes.includes(barcode.rawValue)) {
       setUsedBarcodes([...usedBarcodes, barcode.rawValue]);
       console.log(`Barcode read : ${barcode.rawValue}`);
