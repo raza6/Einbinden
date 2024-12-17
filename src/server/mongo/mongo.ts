@@ -123,7 +123,7 @@ export default class MongoDB {
     pageIndex = 0,
     pageSize = 20,
   ): Promise<BookSearchResponse> {
-    const searchParam = term === '' ? {} : { $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: term } }] };
+    const searchParam = term === '' ? {} : { $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: `${term}` } }] };
     const projectParam = { _id: 0 };
     const sortParam = term === '' ? { 'title': 1, 'subtitle': 1 } : { score: { $meta: 'textScore' } };
 
