@@ -167,7 +167,7 @@ function Home(props: GenProps) {
               </li>
               { renderBookList() }
             </ul>
-            { books.length <= _listSize ? '' : renderPagination() }
+            { booksCount <= _listSize ? '' : renderPagination() }
           </div>
         }
       </Container>
