@@ -38,7 +38,7 @@ export default class MongoDB {
       res = await command();
       return res;
     } catch (ex) {
-      console.log(`💀 ${colors.red('Einbinden failed to execute command')}`);
+      console.log(`💀 ${colors.red('Einbinden failed to execute command')}`, ex);
       return res;
     } finally {
       // Ensures that the client will close when you finish/error
@@ -123,8 +123,8 @@ export default class MongoDB {
     pageIndex = 0,
     pageSize = 20,
   ): Promise<BookSearchResponse> {
-    const searchParam = term === '' ? {} : { $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: term } }] };
-    const projectParam = { _id: 0 };
+    const searchParam = term === '' ? {} : { $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: `${term}` } }] };
+    const projectParam = term === '' ? { _id: 0 } : { _id: 0, score: { $meta: "textScore" }};
     const sortParam = term === '' ? { 'title': 1, 'subtitle': 1 } : { score: { $meta: 'textScore' } };
 
     const result = <Array<Book>><unknown> await this.run(
