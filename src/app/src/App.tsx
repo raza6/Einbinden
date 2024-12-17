@@ -57,6 +57,7 @@ function App() {
         <div id="appWrapper">
           <Routes>
             <Route index path="/app" element={<Home pageName={setPageName}/>}></Route>
+            <Route path="/app/:currentPage" element={<Home pageName={setPageName}/>}></Route>
             <Route path="/app/bookAdd" element={<BookAdd pageName={setPageName}/>}></Route>
             <Route path="/app/settings" element={<Settings pageName={setPageName}/>}></Route>
             <Route path="/app/login" element={<Login pageName={setPageName}/>}></Route>

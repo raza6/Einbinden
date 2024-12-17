@@ -14,7 +14,7 @@ const bookController = (serv: Express) => {
    * @apiDescription Will return a 200 with "hello" if the api is up and running
    */
   serv.get('/ebd/test', (req: Request, res: Response) => {
-    console.log('hello');
+    console.log('Test: hello');
     res.status(200).send('hello');
   });
 

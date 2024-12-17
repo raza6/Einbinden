@@ -4,7 +4,8 @@
 
 .card {
     --bs-card-border-width: none;
-    max-width: 250px;
+    max-width: 300px;
+    background-color: var(--ebd-dark-lighter);
 
     .card-img-top {
         object-fit: cover;

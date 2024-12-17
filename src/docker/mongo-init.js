@@ -21,11 +21,13 @@ books.createIndex(
 books.createIndex(
   {
     'title': 'text',
-    'subtitle': 'text'
+    'subtitle': 'text',
+    'authors': 'text'
   }, {
     weights: {
-      'title': 3,
-      'subtitle': 1
+      'title': 5,
+      'subtitle': 2,
+      'authors': 1
     },
     name: 'textBooksIndex'
   }

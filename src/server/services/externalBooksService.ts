@@ -102,6 +102,11 @@ export default class externalBooksService {
       hasIsbn: true,
       cover: books.map(book => book.cover).filter(v => v !== undefined)?.[0] ?? `https://images.isbndb.com/covers/${[...books[0].isbn].splice(-4, 2).join('')}/${[...books[0].isbn].splice(-2).join('')}/${books[0].isbn}.jpg`,
     };
-    return finalBook;
+
+    if (finalBook.title === '') {
+      throw new NoBookError(`No title found for ${finalBook.isbn}`);
+    } else {
+      return finalBook;
+    }
   }
 }

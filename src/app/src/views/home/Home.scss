@@ -6,15 +6,53 @@
     max-width: none;
     --bs-gutter-x: 4.5rem;
 
-    ul {
+    form {
+        margin-bottom: 16px;
+
+        input::placeholder {
+            color: inherit;
+        }
+
+        button {
+            border: 1px solid var(--ebd-dark-lighter);
+        }
+    }
+
+    #bookListWrapper {
         list-style-type: none;
         padding: 0;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: 16px 16px;
-
+        
         li {
             height: fit-content;
+        }
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+
+        --bs-pagination-color: var(--ebd-light-base);
+        --bs-pagination-bg: var(--ebd-dark-base);
+        --bs-pagination-border-color: var(--ebd-light-base);
+        --bs-pagination-hover-color: var(--ebd-light-base);
+        --bs-pagination-hover-bg: var(--ebd-dark-lighter);
+        --bs-pagination-hover-border-color: var(--ebd-light-base);
+        --bs-pagination-focus-color: var(--ebd-dark-darker);
+        --bs-pagination-focus-bg: var(--ebd-light-darker);
+        --bs-pagination-focus-box-shadow: none;
+        --bs-pagination-active-color: var(--ebd-dark-base);
+        --bs-pagination-active-bg: var(--ebd-light-darker);
+        --bs-pagination-active-border-color: var(--ebd-light-base);
+    }
+    
+    @include media-breakpoint-down(md) {
+        --bs-gutter-x: 1.5rem;
+
+        ul {
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
         }
     }
 }

@@ -29,8 +29,21 @@ function useDebounce(callback: Function) {
   return debouncedCallback;
 }
 
+const usePrevious = (value: any) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
+
+const useHasChanged= (value: any) => {
+  const previousValue = usePrevious(value);
+  return previousValue !== value;
+};
+
 function getRandomOfList (list: Array<string>): string {
   return list[Math.floor((Math.random()*list.length))];
 }
 
-export { debounce, useDebounce, getRandomOfList };
+export { debounce, useDebounce, getRandomOfList, useHasChanged };
