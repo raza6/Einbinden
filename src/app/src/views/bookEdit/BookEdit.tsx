@@ -82,7 +82,7 @@ function BookEdit(props: GenProps) {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Publisher</Form.Label>
-            <Form.Control value={book?.publisher ?? ''} maxLength={512} type="text" placeholder="Authors" 
+            <Form.Control value={book?.publisher ?? ''} maxLength={512} type="text" placeholder="Publisher" 
               onChange={(e) => setBook({ ...book, publisher: e.currentTarget.value } as Book)}
             />
           </Form.Group>
