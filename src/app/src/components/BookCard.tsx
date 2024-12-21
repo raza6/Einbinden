@@ -11,7 +11,7 @@ function BookCard(props: BookCardProps) {
   return (
     <li>
       <Card>
-        <Card.Img variant="top" src={props.book.cover} />
+        <Card.Img variant="top" src={props.book.cover === '' ? 'https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg' : props.book.cover} />
         <Card.ImgOverlay>
           <Card.Body className="bookTitle">
             <Card.Title title={`${props.book.title} (${[props.book.subtitle, props.book.publisher, props.book.publishedDate].filter(v => !!v).join(', ')})`}>

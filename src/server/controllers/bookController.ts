@@ -29,7 +29,20 @@ const bookController = (serv: Express) => {
   serv.delete('/ebd/book/:id', ensureAuthenticated, async (req: Request, res: Response) => {
     const result = await bookService.deleteBook(req.params.id);
     console.log(result ? '😀 book deleted' : '😔 book not deleted');
-    res.status(result ? 200 : 400).send();
+    res.status(result ? 200 : 400).send(result);
+  });
+
+  /**
+   * @apiName BookDetail
+   * @apiGroup Book
+   * @api {GET} /ebd/book/:isbn Get a book
+   *
+   * @apiParam {string} isbn ISBN of the book
+   * @apiError (401) {null} UserNotAuthenticated
+   */
+  serv.get('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
+    const result = await bookService.getBook(req.params.isbn);
+    res.status(200).send(result);
   });
 
   /**
@@ -61,6 +74,19 @@ const bookController = (serv: Express) => {
       const result = await bookService.addBookViaIsbn(req.params.isbn);
       res.status(result ? 200 : 400).send(result);
     });
+
+      /**
+   * @apiName BookDetail
+   * @apiGroup Book
+   * @api {PUT} /ebd/book/:isbn Edit a book
+   *
+   * @apiParam {string} isbn ISBN of the book
+   * @apiError (401) {null} UserNotAuthenticated
+   */
+  serv.put('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
+    const result = await bookService.editBook(req.params.isbn, req.body.book);
+    res.status(200).send(result);
+  });
 };
 
 export default bookController;

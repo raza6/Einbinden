@@ -10,6 +10,7 @@ import BookService from '../../services/bookService';
 import { Link } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import { useDebounce, useHasChanged } from '../../utils';
+import { AiFillLock } from 'react-icons/ai';
 
 function Home(props: GenProps) {
   // State
@@ -128,8 +129,11 @@ function Home(props: GenProps) {
 
   const renderBookList = () => {
     return (
-      books.map(book => 
-        <BookCard book={book} key={book.isbn}></BookCard>)
+      books.map(book =>
+        <Link to={`/app/bookEdit/${book.isbn}`} key={book.isbn}>
+          <BookCard book={book}></BookCard>
+        </Link>
+      )
     );
   };
 
@@ -137,38 +141,49 @@ function Home(props: GenProps) {
     <Col>
       <h1 className="laptop">Book list</h1>
       <Container id="homeWrapper">
-        <Form onSubmit={handleSubmit}>
-          <InputGroup id="searchBarWrapper">
-            <Form.Control
-              type="text" value={search} onInput={handleInput} maxLength={50} placeholder="Title, author..."
-            />
-            <Button variant="outline-secondary" id="bookSearchInput" type="submit">
-              <FiSearch />
-            </Button>
-          </InputGroup>
-        </Form>
-        { loading ? 
-          <Col className="d-flex justify-content-center mt-5">
-            <Spinner animation="border" />
-          </Col> :
-          <div id="bookListOuterWrapper">
-            <ul id="bookListWrapper">
-              <li>
-                <Link to="/app/bookAdd">
-                  <Card>
-                    <Card.Img variant="top" src={`${process.env.PUBLIC_URL}/addBook.png`} />
-                    <Card.ImgOverlay>
-                      <Card.Body>
-                        <Card.Title>Add a book</Card.Title>
-                      </Card.Body>
-                    </Card.ImgOverlay>
-                  </Card>
-                </Link>
-              </li>
-              { renderBookList() }
-            </ul>
-            { booksCount <= _listSize ? '' : renderPagination() }
-          </div>
+        {
+          loggedIn ?
+            <div>
+              <Form onSubmit={handleSubmit}>
+                <InputGroup id="searchBarWrapper">
+                  <Form.Control
+                    type="text" value={search} onInput={handleInput} maxLength={50} placeholder="Title, author..."
+                  />
+                  <Button variant="outline-secondary" id="bookSearchInput" type="submit">
+                    <FiSearch />
+                  </Button>
+                </InputGroup>
+              </Form>
+              { loading ? 
+                <Col className="d-flex justify-content-center mt-5">
+                  <Spinner animation="border" />
+                </Col> :
+                <div id="bookListOuterWrapper">
+                  <ul id="bookListWrapper">
+                    <li>
+                      <Link to="/app/bookAdd">
+                        <Card>
+                          <Card.Img variant="top" src={`${process.env.PUBLIC_URL}/addBook.png`} />
+                          <Card.ImgOverlay>
+                            <Card.Body>
+                              <Card.Title>Add a book</Card.Title>
+                            </Card.Body>
+                          </Card.ImgOverlay>
+                        </Card>
+                      </Link>
+                    </li>
+                    { renderBookList() }
+                  </ul>
+                  { booksCount <= _listSize ? '' : renderPagination() }
+                </div>
+              }
+            </div>
+            :
+            <div className="loginButtonWrapper">
+              <Link to="/app/login">
+                <Button size="lg"><AiFillLock /> Login</Button>
+              </Link>
+            </div>
         }
       </Container>
     </Col>

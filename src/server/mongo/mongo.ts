@@ -106,6 +106,18 @@ export default class MongoDB {
     );
   }
 
+  public async editBook(book: Book): Promise<void> {
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).findOneAndReplace({ isbn: book.isbn }, book),
+    );
+  }
+
+  public async getBook(isbn: string): Promise<Book> {
+    return <Book><unknown> await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).findOne({ isbn: isbn }, { projection: { _id: 0 } }),
+    );
+  }
+
   public async deleteBook(isbn: string): Promise<void> {
     await this.run(
       () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).deleteOne({ isbn: isbn }),

@@ -12,6 +12,7 @@ import Login from './views/auth/login/Login';
 import Home from './views/home/Home';
 import Settings from './views/settings/Settings';
 import BookAdd from './views/bookAdd/BookAdd';
+import BookEdit from './views/bookEdit/BookEdit';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -59,6 +60,7 @@ function App() {
             <Route index path="/app" element={<Home pageName={setPageName}/>}></Route>
             <Route path="/app/:currentPage" element={<Home pageName={setPageName}/>}></Route>
             <Route path="/app/bookAdd" element={<BookAdd pageName={setPageName}/>}></Route>
+            <Route path="/app/bookEdit/:isbn" element={<BookEdit pageName={setPageName}/>}></Route>
             <Route path="/app/settings" element={<Settings pageName={setPageName}/>}></Route>
             <Route path="/app/login" element={<Login pageName={setPageName}/>}></Route>
             <Route path="/app/logout" element={<Logout pageName={setPageName} logoutCallback={handleLoginCheck}/>}></Route>

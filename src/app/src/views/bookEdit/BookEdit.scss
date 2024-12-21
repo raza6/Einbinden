@@ -1,0 +1,50 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+
+.bookEditFormWrapper {
+  .coverWrapper, form {
+    flex: 1 1 0;
+  }
+
+  .coverWrapper {
+    display: flex;
+    justify-content: center;
+    
+    img {
+      max-height: 50vh;
+      width: auto;
+    }
+  }
+
+  form input::placeholder {
+    color: #847c6d;
+  }
+
+  .buttonWrapper {
+    display: flex;
+    gap: 16px;
+
+    button svg {
+      margin-right: 8px;
+    }
+
+    .deleteButton {
+      margin-left: auto;
+    }
+  }
+}
+
+.toast {
+  margin: 12px;
+  
+  .toast-header {
+    --bs-toast-header-bg: rgba(33, 37, 41, 0.85);
+    --bs-toast-header-color: var(--bs-toast-color);
+    justify-content: space-between;
+
+    button {
+      filter: invert(1);
+    }
+  }
+}
