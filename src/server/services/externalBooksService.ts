@@ -34,6 +34,7 @@ export default class externalBooksService {
         isbn: isbn,
         hasIsbn: true,
         cover: undefined,
+        userId: undefined
       }
     } else {
       return null;
@@ -55,6 +56,7 @@ export default class externalBooksService {
         isbn: isbn,
         hasIsbn: true,
         cover: imgUrl !== undefined ? `https://inventaire.io${imgUrl}` : undefined,
+        userId: undefined
       }
     } else {
       return null;
@@ -74,6 +76,7 @@ export default class externalBooksService {
         isbn: isbn,
         hasIsbn: true,
         cover: undefined,
+        userId: undefined
       }
     } else {
       return null;
@@ -101,6 +104,7 @@ export default class externalBooksService {
       isbn: books[0].isbn,
       hasIsbn: true,
       cover: books.map(book => book.cover).filter(v => v !== undefined)?.[0] ?? `https://images.isbndb.com/covers/${[...books[0].isbn].splice(-4, 2).join('')}/${[...books[0].isbn].splice(-2).join('')}/${books[0].isbn}.jpg`,
+      userId: undefined
     };
 
     if (finalBook.title === '') {

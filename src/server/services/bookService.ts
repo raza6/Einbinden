@@ -4,15 +4,16 @@ import { parseISBN } from "../utils/isbn";
 import externalBooksService from "./externalBooksService";
 
 export default class bookService {
-  public static async addBookViaIsbn(isbn: string): Promise<Book | null> {
+  public static async addBookViaIsbn(isbn: string, userId: string): Promise<Book | null> {
     try {
       const isbnParsed = parseISBN(isbn);
       const mongo = new MongoDB();
-      if (await mongo.checkBook(isbn)) {
+      if (await mongo.checkBook(isbn, userId)) {
         console.log(`🧨 Book already present (ISBN : ${isbn})`);
         return null;
       } else {
         const book = await externalBooksService.getByISBN(isbnParsed);
+        book.userId = userId;
         await mongo.addBook(book);
         return book;
       }
@@ -22,11 +23,11 @@ export default class bookService {
     }
   }
 
-  public static async editBook(isbn: string, book: Book): Promise<boolean> {
+  public static async editBook(isbn: string, book: Book, userId: string): Promise<boolean> {
     try {
       const mongo = new MongoDB();
-      if (await mongo.checkBook(isbn)) {
-        await mongo.editBook(book);
+      if (book.userId === userId && await mongo.checkBook(isbn, userId)) {
+        await mongo.editBook(book, userId);
         return true;
       } else {
         console.log(`🧨 Book not present (ISBN : ${isbn})`);
@@ -38,11 +39,11 @@ export default class bookService {
     }
   }
 
-  public static async getBook(isbn: string): Promise<Book | null> {
+  public static async getBook(isbn: string, userId: string): Promise<Book | null> {
     if (isbn) {
       try {
         const mongo = new MongoDB();
-        return await mongo.getBook(isbn);
+        return await mongo.getBook(isbn, userId);
       } catch (err: unknown) {
         console.log(`🧨 Book not retrieved (ISBN : ${isbn}), reason : ${err}`);
         return null;
@@ -53,11 +54,11 @@ export default class bookService {
     return null;
   }
 
-  public static async deleteBook(isbn: string): Promise<boolean> {
+  public static async deleteBook(isbn: string, userId: string): Promise<boolean> {
     if (isbn) {
       try {
         const mongo = new MongoDB();
-        await mongo.deleteBook(isbn);
+        await mongo.deleteBook(isbn, userId);
         return true;
       } catch (err: unknown) {
         console.log(`🧨 Book not deleted (ISBN : ${isbn}), reason : ${err}`);
@@ -73,10 +74,11 @@ export default class bookService {
     term: string,
     pageIndex: number,
     pageSize: number,
+    userId: string
   ): Promise<BookSearchResponse> {
     try {
       const mongo = new MongoDB();
-      return await mongo.searchBook(term.trim(), pageIndex, pageSize);
+      return await mongo.searchBook(term.trim(), pageIndex, pageSize, userId);
     } catch (err: unknown) {
       return {
         books: [],

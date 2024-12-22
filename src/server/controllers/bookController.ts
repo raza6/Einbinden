@@ -1,6 +1,7 @@
 import { Request, Response, Express } from 'express';
 import { ensureAuthenticated } from '../utils/utils';
 import bookService from '../services/bookService';
+import { User } from '../types/user';
 
 /**
  * API
@@ -27,7 +28,7 @@ const bookController = (serv: Express) => {
    * @apiError (401) {null} UserNotAuthenticated
    */
   serv.delete('/ebd/book/:id', ensureAuthenticated, async (req: Request, res: Response) => {
-    const result = await bookService.deleteBook(req.params.id);
+    const result = await bookService.deleteBook(req.params.id, (req.user as User).id.toString());
     console.log(result ? '😀 book deleted' : '😔 book not deleted');
     res.status(result ? 200 : 400).send(result);
   });
@@ -41,7 +42,7 @@ const bookController = (serv: Express) => {
    * @apiError (401) {null} UserNotAuthenticated
    */
   serv.get('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
-    const result = await bookService.getBook(req.params.isbn);
+    const result = await bookService.getBook(req.params.isbn, (req.user as User).id.toString());
     res.status(200).send(result);
   });
 
@@ -56,7 +57,7 @@ const bookController = (serv: Express) => {
    */
   serv.post('/ebd/book/search', ensureAuthenticated, async (req: Request, res: Response) => {
     const { searchTerm, pageIndex, pageSize } = req.body;
-    const result = await bookService.searchBook(searchTerm, pageIndex, pageSize);
+    const result = await bookService.searchBook(searchTerm, pageIndex, pageSize, (req.user as User).id.toString());
     res.status(200).send(result);
   });
 
@@ -71,7 +72,7 @@ const bookController = (serv: Express) => {
    * @apiError (400) {null} BookNotFound Book with isbn <code>isbn</code> was not found by google API
    */
     serv.post('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
-      const result = await bookService.addBookViaIsbn(req.params.isbn);
+      const result = await bookService.addBookViaIsbn(req.params.isbn, (req.user as User).id.toString());
       res.status(result ? 200 : 400).send(result);
     });
 
@@ -84,7 +85,7 @@ const bookController = (serv: Express) => {
    * @apiError (401) {null} UserNotAuthenticated
    */
   serv.put('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
-    const result = await bookService.editBook(req.params.isbn, req.body.book);
+    const result = await bookService.editBook(req.params.isbn, req.body.book, (req.user as User).id.toString());
     res.status(200).send(result);
   });
 };

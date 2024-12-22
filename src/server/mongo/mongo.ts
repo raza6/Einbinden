@@ -106,27 +106,27 @@ export default class MongoDB {
     );
   }
 
-  public async editBook(book: Book): Promise<void> {
+  public async editBook(book: Book, userId: string): Promise<void> {
     await this.run(
-      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).findOneAndReplace({ isbn: book.isbn }, book),
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).findOneAndReplace({ isbn: book.isbn, userId: userId }, book),
     );
   }
 
-  public async getBook(isbn: string): Promise<Book> {
+  public async getBook(isbn: string, userId: string): Promise<Book> {
     return <Book><unknown> await this.run(
-      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).findOne({ isbn: isbn }, { projection: { _id: 0 } }),
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).findOne({ isbn: isbn, userId: userId }, { projection: { _id: 0 } }),
     );
   }
 
-  public async deleteBook(isbn: string): Promise<void> {
+  public async deleteBook(isbn: string, userId: string): Promise<void> {
     await this.run(
-      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).deleteOne({ isbn: isbn }),
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).deleteOne({ isbn: isbn, userId: userId }),
     );
   }
 
-  public async checkBook(isbn: string): Promise<boolean> {
+  public async checkBook(isbn: string, userId: string): Promise<boolean> {
     return await this.run(
-      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).countDocuments({ isbn: isbn })
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).countDocuments({ isbn: isbn, userId: userId })
     ) === 1;
   }
 
@@ -134,8 +134,9 @@ export default class MongoDB {
     term: string,
     pageIndex = 0,
     pageSize = 20,
+    userId: string
   ): Promise<BookSearchResponse> {
-    const searchParam = term === '' ? {} : { $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: `${term}` } }] };
+    const searchParam = term === '' ? { userId: userId } : { userId: userId, $or: [{ 'title': { $regex: `${term}`, $options: 'i' } }, { $text: { $search: `${term}` } }] };
     const projectParam = term === '' ? { _id: 0 } : { _id: 0, score: { $meta: "textScore" }};
     const sortParam = term === '' ? { 'title': 1, 'subtitle': 1 } : { score: { $meta: 'textScore' } };
 

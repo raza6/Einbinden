@@ -7,6 +7,7 @@ interface Book {
   publishedDate: string;
   cover: string | undefined;
   hasIsbn: boolean;
+  userId: string | undefined;
 }
 
 interface BookSearchResponse {
