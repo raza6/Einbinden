@@ -5,7 +5,7 @@ enum EAuthOrigin {
 interface User {
   name: string;
   avatar?: string;
-  id: number;
+  id: string;
   lastConnection: Date;
   origin: EAuthOrigin;
 }

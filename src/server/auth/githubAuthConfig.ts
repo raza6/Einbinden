@@ -25,7 +25,7 @@ const githubAuthConfig = (passport: PassportStatic) => {
           const { _json: jsonGithubUser } = profile;
           const cleanUser = {
             name: jsonGithubUser.name,
-            id: jsonGithubUser.id,
+            id: jsonGithubUser.id.toString(),
             avatar: jsonGithubUser.avatar_url,
             origin: EAuthOrigin.Github,
             lastConnection: new Date(),

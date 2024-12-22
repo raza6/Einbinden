@@ -57,8 +57,10 @@ function App() {
         </Row>
         <div id="appWrapper">
           <Routes>
-            <Route index path="/app" element={<Home pageName={setPageName}/>}></Route>
-            <Route path="/app/:currentPage" element={<Home pageName={setPageName}/>}></Route>
+            <Route index path="/app" element={<Home pageName={setPageName} user={user}/>}></Route>
+            <Route path="/app/:currentPage" element={<Home pageName={setPageName} user={user}/>}></Route>
+            <Route path="/app/share/:shareId" element={<Home pageName={setPageName}/>}></Route>
+            <Route path="/app/share/:shareId/:currentPage" element={<Home pageName={setPageName}/>}></Route>
             <Route path="/app/bookAdd" element={<BookAdd pageName={setPageName}/>}></Route>
             <Route path="/app/bookEdit/:isbn" element={<BookEdit pageName={setPageName}/>}></Route>
             <Route path="/app/settings" element={<Settings pageName={setPageName}/>}></Route>

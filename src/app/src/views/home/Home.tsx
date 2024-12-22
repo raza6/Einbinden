@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Container, Col, Card, InputGroup, Form, Button, Spinner, Pagination } from 'react-bootstrap';
+import { Container, Col, Card, InputGroup, Form, Button, Spinner, Pagination, Toast, ToastContainer } from 'react-bootstrap';
 import { useParams, useSearchParams } from 'react-router-dom';
 import './Home.scss';
 import { GenProps } from '../../types/generic';
@@ -8,11 +8,17 @@ import { Book } from '../../types/book';
 import BookCard from '../../components/BookCard';
 import BookService from '../../services/bookService';
 import { Link } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiShare2 } from 'react-icons/fi';
 import { useDebounce, useHasChanged } from '../../utils';
 import { AiFillLock } from 'react-icons/ai';
+import { EAuthOrigin, User } from '../../types/user';
+import ShareService from '../../services/shareService';
 
-function Home(props: GenProps) {
+type HomeProps = GenProps & { 
+  user?: User | undefined
+}
+
+function Home(props: HomeProps) {
   // State
   const [, setSearchParams] = useSearchParams();
   const [books, setBooks] = useState<Array<Book>>([]);
@@ -21,6 +27,8 @@ function Home(props: GenProps) {
   const [currentPageChangedPending, setCurrentPageChangedPending] = useState(false);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [userNameShare, setUserNameShare] = useState<string | undefined>(undefined);
 
   // Constant
   const _listSize = 100;
@@ -30,9 +38,12 @@ function Home(props: GenProps) {
   const loggedIn = useContext(AuthContext);
 
   // Circumstancial
-  const { currentPage: currentPageInit } = useParams();
+  const { currentPage: currentPageInit, shareId: shareIdRaw } = useParams();
   const searchInit = useSearchParams()[0].get('search') ?? '';
   const currentPageChanged = useHasChanged(currentPage);
+  
+  const shareId = shareIdRaw ?? '';
+  const shareMode = !!shareId;
 
   useEffect(() => {
     const currentPageClean = currentPageInit !== undefined ? parseInt(currentPageInit, 10) : 0;
@@ -45,11 +56,24 @@ function Home(props: GenProps) {
     if (currentPageChanged) {
       setCurrentPageChangedPending(true);
     }
-    if ((currentPageChanged || currentPageChangedPending) && loggedIn) {
+    if ((currentPageChanged || currentPageChangedPending) && (loggedIn || shareMode)) {
       updateBookList(currentPage);
       setCurrentPageChangedPending(false);
     }
   }, [currentPage, loggedIn]);
+
+  useEffect(() => {
+    updateShare();
+  }, [shareId]);
+  
+  const updateShare = async () => {
+    if (shareId) {
+      const userName = await ShareService.get(shareId);
+      setUserNameShare(`${userName}'s book list`);
+    } else {
+      setUserNameShare(undefined);
+    }
+  };
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,7 +84,9 @@ function Home(props: GenProps) {
     setLoading(true);
     setSearchParams({ search });
     
-    const result = await BookService.search(search, requestedPage, _listSize);
+    const result = shareMode ? 
+      await ShareService.search(shareId, search, requestedPage, _listSize)
+      : await BookService.search(search, requestedPage, _listSize);
     const maxPage = Math.floor((result.count-1)/_listSize);
     let currentPage = requestedPage;
     if (currentPage === undefined || currentPage > maxPage || currentPage < 0) {
@@ -81,8 +107,18 @@ function Home(props: GenProps) {
     }
   };
 
-  const buildUrl = (index: number = 0, search: string = '') => {
-    return `/app/${index}${search !== '' ? `?search=${encodeURI(search)}` : ''}`;
+  const buildPaginationUrl = (index: number = 0, search: string = '') => {
+    return `/app/${shareMode ? `share/${shareId}/` : ''}${index}${search !== '' ? `?search=${encodeURI(search)}` : ''}`;
+  };
+
+  const shareUrl = () => {
+    if (props.user !== undefined) {
+      const user = props.user as User;
+      const shareUrl = `${window.location.origin}/app/share/${user.origin === EAuthOrigin.Github ? '00' : 'xx'}${parseInt(user.id, 10).toString(16)}`;
+      console.log(`Share url is : ${shareUrl}`);
+      navigator.clipboard.writeText(shareUrl);
+      setShowToast(true);
+    }
   };
 
   const renderPagination = () => {
@@ -93,9 +129,9 @@ function Home(props: GenProps) {
     const paginationStart = [];
     for (let i = currentPageFromState - 1; i >= 0; i--) { // Scan to the left
       if (i > currentPageFromState - 1 - _paginationReach) { // Between first page and min reach
-        paginationStart.push(<Pagination.Item key={`p_${i}`} href={buildUrl(i, search)}>{i+1}</Pagination.Item>);
+        paginationStart.push(<Pagination.Item key={`p_${i}`} href={buildPaginationUrl(i, search)}>{i+1}</Pagination.Item>);
       } else if (i === 0) { // First page
-        paginationStart.push(<Pagination.Item key={`p_${i}`} href={buildUrl(i, search)}>{i+1}</Pagination.Item>);
+        paginationStart.push(<Pagination.Item key={`p_${i}`} href={buildPaginationUrl(i, search)}>{i+1}</Pagination.Item>);
       } else if (!hasEllipsis) {
         hasEllipsis = true;
         paginationStart.push(<Pagination.Ellipsis key={`p_${i}`}></Pagination.Ellipsis>);
@@ -106,9 +142,9 @@ function Home(props: GenProps) {
     const paginationEnd = [];
     for (let i = currentPageFromState + 1; i <= maxPage; i++) { // Scan to the right
       if (i < currentPageFromState + 1 + _paginationReach) { // Between last page and max reach
-        paginationEnd.push(<Pagination.Item key={`p_${i}`} href={buildUrl(i, search)}>{i+1}</Pagination.Item>);
+        paginationEnd.push(<Pagination.Item key={`p_${i}`} href={buildPaginationUrl(i, search)}>{i+1}</Pagination.Item>);
       } else if (i === maxPage) { // Last page
-        paginationEnd.push(<Pagination.Item key={`p_${i}`} href={buildUrl(i, search)}>{i+1}</Pagination.Item>);
+        paginationEnd.push(<Pagination.Item key={`p_${i}`} href={buildPaginationUrl(i, search)}>{i+1}</Pagination.Item>);
       } else if (!hasEllipsis) {
         hasEllipsis = true;
         paginationEnd.push(<Pagination.Ellipsis key={`p_${i}`}></Pagination.Ellipsis>);
@@ -116,13 +152,13 @@ function Home(props: GenProps) {
     }
     return (
       <Pagination>
-        {currentPageFromState !== 0 && <Pagination.First href={buildUrl(0, search)} />}
-        {currentPageFromState !== 0 && <Pagination.Prev href={buildUrl(currentPageFromState - 1, search)} />}
+        {currentPageFromState !== 0 && <Pagination.First href={buildPaginationUrl(0, search)} />}
+        {currentPageFromState !== 0 && <Pagination.Prev href={buildPaginationUrl(currentPageFromState - 1, search)} />}
         {paginationStart.map(v => v)}
         <Pagination.Item active>{currentPageFromState + 1}</Pagination.Item>
         {paginationEnd.map(v => v)}
-        {currentPageFromState !== maxPage && <Pagination.Next href={buildUrl(currentPageFromState + 1, search)} />}
-        {currentPageFromState !== maxPage && <Pagination.Last href={buildUrl(maxPage, search)} />}
+        {currentPageFromState !== maxPage && <Pagination.Next href={buildPaginationUrl(currentPageFromState + 1, search)} />}
+        {currentPageFromState !== maxPage && <Pagination.Last href={buildPaginationUrl(maxPage, search)} />}
       </Pagination>
     );
   };
@@ -130,53 +166,75 @@ function Home(props: GenProps) {
   const renderBookList = () => {
     return (
       books.map(book =>
-        <Link to={`/app/bookEdit/${book.isbn}`} key={book.isbn}>
-          <BookCard book={book}></BookCard>
-        </Link>
+        shareMode ?
+          <BookCard book={book} key={book.isbn}></BookCard>
+          :
+          <Link to={`/app/bookEdit/${book.isbn}`} key={book.isbn}>
+            <BookCard book={book}></BookCard>
+          </Link>
       )
     );
   };
 
   return (
     <Col>
-      <h1 className="laptop">Book list</h1>
+      <h1 className="laptop">{userNameShare ?? 'Book list'}</h1>
       <Container id="homeWrapper">
         {
-          loggedIn ?
+          loggedIn || shareMode ?
             <div>
-              <Form onSubmit={handleSubmit}>
-                <InputGroup id="searchBarWrapper">
-                  <Form.Control
-                    type="text" value={search} onInput={handleInput} maxLength={50} placeholder="Title, author..."
-                  />
-                  <Button variant="outline-secondary" id="bookSearchInput" type="submit">
-                    <FiSearch />
-                  </Button>
-                </InputGroup>
-              </Form>
+              <div className="formWrapper">
+                <Form onSubmit={handleSubmit}>
+                  <InputGroup id="searchBarWrapper">
+                    <Form.Control
+                      type="text" value={search} onInput={handleInput} maxLength={50} placeholder="Title, author..."
+                    />
+                    <Button variant="outline-secondary" id="bookSearchInput" type="submit">
+                      <FiSearch />
+                    </Button>
+                  </InputGroup>
+                </Form>
+                {
+                  shareMode ? '' :
+                    <Button className="shareButton" onClick={shareUrl}>
+                      <FiShare2 />
+                      Share
+                    </Button>
+                }
+              </div>
               { loading ? 
                 <Col className="d-flex justify-content-center mt-5">
                   <Spinner animation="border" />
                 </Col> :
                 <div id="bookListOuterWrapper">
                   <ul id="bookListWrapper">
-                    <li>
-                      <Link to="/app/bookAdd">
-                        <Card>
-                          <Card.Img variant="top" src={`${process.env.PUBLIC_URL}/addBook.png`} />
-                          <Card.ImgOverlay>
-                            <Card.Body>
-                              <Card.Title>Add a book</Card.Title>
-                            </Card.Body>
-                          </Card.ImgOverlay>
-                        </Card>
-                      </Link>
-                    </li>
+                    {
+                      shareMode ? '' :
+                        <li>
+                          <Link to="/app/bookAdd">
+                            <Card>
+                              <Card.Img variant="top" src={`${process.env.PUBLIC_URL}/addBook.png`} />
+                              <Card.ImgOverlay>
+                                <Card.Body>
+                                  <Card.Title>Add a book</Card.Title>
+                                </Card.Body>
+                              </Card.ImgOverlay>
+                            </Card>
+                          </Link>
+                        </li>
+                    }
                     { renderBookList() }
                   </ul>
                   { booksCount <= _listSize ? '' : renderPagination() }
                 </div>
               }
+              <ToastContainer position="bottom-end">
+                <Toast onClose={() => setShowToast(false)} bg="success" autohide delay={3000} show={showToast}>
+                  <Toast.Header>
+                    <strong>Share URL copied to clipboard</strong>
+                  </Toast.Header>
+                </Toast>
+              </ToastContainer>
             </div>
             :
             <div className="loginButtonWrapper">

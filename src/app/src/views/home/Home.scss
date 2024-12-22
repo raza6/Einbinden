@@ -12,15 +12,30 @@
         margin-top: 32px;
     }
 
-    form {
-        margin-bottom: 16px;
+    .formWrapper {
+        display: flex;
+        gap: 8px;
 
-        input::placeholder {
-            color: inherit;
+        form {
+            width: 100%;
+            margin-bottom: 16px;
+    
+            input::placeholder {
+                color: inherit;
+            }
+    
+            button {
+                border: 1px solid var(--ebd-dark-lighter);
+            }
         }
 
-        button {
-            border: 1px solid var(--ebd-dark-lighter);
+        button.shareButton {
+            width: 90px;
+            height: fit-content;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
         }
     }
 
