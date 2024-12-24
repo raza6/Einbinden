@@ -12,8 +12,12 @@ export default class bookService {
         console.log(`🧨 Book already present (ISBN : ${isbn})`);
         return null;
       } else {
-        const book = await externalBooksService.getByISBN(isbnParsed);
-        book.userId = userId;
+        const bookBase = await externalBooksService.getByISBN(isbnParsed);
+        const book = {
+          ...bookBase,
+          userId,
+          addedAtCollectionTime: new Date()
+        };
         await mongo.addBook(book);
         return book;
       }

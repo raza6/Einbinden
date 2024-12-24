@@ -32,7 +32,17 @@ const shareController = (serv: Express) => {
       const shareId = req.params.shareId;
       if (shareId) {
         const userId = parseInt(shareId.slice(2), 16).toString(); 
-        const result = await bookService.searchBook(searchTerm, pageIndex, pageSize, userId);
+        let result = await bookService.searchBook(searchTerm, pageIndex, pageSize, userId);
+        result.books = result.books.map(b => { return {
+          isbn: b.isbn,
+          title: b.title,
+          subtitle: b.subtitle,
+          authors: b.authors,
+          publisher: b.publisher,
+          publishedDate: b.publishedDate,
+          cover: b.cover,
+          hasIsbn: b.hasIsbn,
+        }});
         res.status(200).send(result);
       } else {
         res.status(400).send();

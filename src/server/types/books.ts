@@ -1,4 +1,4 @@
-interface Book {
+interface BookBase {
   isbn: string;
   title: string;
   subtitle: string | undefined;
@@ -7,11 +7,15 @@ interface Book {
   publishedDate: string;
   cover: string | undefined;
   hasIsbn: boolean;
-  userId: string | undefined;
+}
+
+interface Book extends BookBase {
+  userId: string;
+  addedAtCollectionTime: Date
 }
 
 interface BookSearchResponse {
-  books: Array<Book>;
+  books: Array<BookBase>;
   count: number;
 }
 
@@ -22,6 +26,7 @@ interface BookRequest {
 }
 
 export type {
+  BookBase,
   Book,
   BookRequest,
   BookSearchResponse

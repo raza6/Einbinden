@@ -1,10 +1,10 @@
 import axios, { AxiosError } from 'axios';
 import * as cheerio from 'cheerio';
-import { Book } from '../types/books';
+import { BookBase } from '../types/books';
 import { NoBookError } from '../utils/utils';
 
 export default class externalBooksService {
-  public static async getByISBN(isbn: string): Promise<Book> {
+  public static async getByISBN(isbn: string): Promise<BookBase> {
     try {
       // Retrieve from all data points
       const bookGoogle = await externalBooksService.retrieveGoogle(isbn);
@@ -12,7 +12,7 @@ export default class externalBooksService {
       const bookBNF = await externalBooksService.retrieveBNF(isbn);
       const allBooks = [bookGoogle, bookInventaire, bookBNF].filter(v => v !== null);
       if (allBooks.length > 0) {
-        return externalBooksService.mergeBookRetrieval(<Book[]>allBooks);
+        return externalBooksService.mergeBookRetrieval(<BookBase[]>allBooks);
       } else {
         throw new NoBookError(`No reference found anywhere for ${isbn}`);
       }
@@ -21,7 +21,7 @@ export default class externalBooksService {
     }
   }
 
-  private static async retrieveGoogle(isbn: string): Promise<Book | null> {
+  private static async retrieveGoogle(isbn: string): Promise<BookBase | null> {
     const responseGoogle = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);      
     const bookGoogle = responseGoogle.data.items?.[0];
     if (bookGoogle) {
@@ -33,15 +33,14 @@ export default class externalBooksService {
         publishedDate: bookGoogle.volumeInfo.publishedDate,
         isbn: isbn,
         hasIsbn: true,
-        cover: undefined,
-        userId: undefined
+        cover: undefined
       }
     } else {
       return null;
     }
   }
 
-  private static async retrieveInventaire(isbn: string): Promise<Book | null> {
+  private static async retrieveInventaire(isbn: string): Promise<BookBase | null> {
     const responseInventaire = await axios.get(`https://inventaire.io/api/data?action=isbn&isbn=${isbn}`);
     const bookInventaire = responseInventaire.data;
     if (bookInventaire) {
@@ -55,15 +54,14 @@ export default class externalBooksService {
         publishedDate: bookInventaire.publicationDate,
         isbn: isbn,
         hasIsbn: true,
-        cover: imgUrl !== undefined ? `https://inventaire.io${imgUrl}` : undefined,
-        userId: undefined
+        cover: imgUrl !== undefined ? `https://inventaire.io${imgUrl}` : undefined
       }
     } else {
       return null;
     }
   }
 
-  private static async retrieveBNF(isbn: string): Promise<Book | null> {
+  private static async retrieveBNF(isbn: string): Promise<BookBase | null> {
     const responseBNF = await axios.get(`https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn adj "${isbn}"&recordSchema=unimarcXchange`);
     const htmlScrap = cheerio.load(responseBNF.data, { xmlMode: true });
     if (parseInt(htmlScrap('srw\\:numberOfRecords').text(), 10) > 0) {
@@ -75,8 +73,7 @@ export default class externalBooksService {
         publishedDate: htmlScrap('[tag="214"] [code="d"]').text(),
         isbn: isbn,
         hasIsbn: true,
-        cover: undefined,
-        userId: undefined
+        cover: undefined
       }
     } else {
       return null;
@@ -94,7 +91,7 @@ export default class externalBooksService {
     return authors;
   }
 
-  private static mergeBookRetrieval(books: Book[]): Book {
+  private static mergeBookRetrieval(books: BookBase[]): BookBase {
     const finalBook = {
       title: books.map(book => book.title).filter(v => v !== undefined)?.[0] ?? '',
       subtitle: books.map(book => book.subtitle).filter(v => v !== undefined)?.[0] ?? '',
@@ -103,8 +100,7 @@ export default class externalBooksService {
       publishedDate: books.map(book => book.publishedDate).filter(v => v !== undefined)?.[0] ?? '',
       isbn: books[0].isbn,
       hasIsbn: true,
-      cover: books.map(book => book.cover).filter(v => v !== undefined)?.[0] ?? `https://images.isbndb.com/covers/${[...books[0].isbn].splice(-4, 2).join('')}/${[...books[0].isbn].splice(-2).join('')}/${books[0].isbn}.jpg`,
-      userId: undefined
+      cover: books.map(book => book.cover).filter(v => v !== undefined)?.[0] ?? `https://images.isbndb.com/covers/${[...books[0].isbn].splice(-4, 2).join('')}/${[...books[0].isbn].splice(-2).join('')}/${books[0].isbn}.jpg`
     };
 
     if (finalBook.title === '') {
