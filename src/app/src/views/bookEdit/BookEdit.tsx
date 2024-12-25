@@ -4,7 +4,7 @@ import { GenProps } from '../../types/generic';
 import { Col, Form, Image, Row, Button, ToastContainer, Toast, Modal } from 'react-bootstrap';
 import { Book } from '../../types/book';
 import BookService from '../../services/bookService';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { FiCornerUpLeft, FiEdit, FiTrash2 } from 'react-icons/fi';
 
 function BookEdit(props: GenProps) {
@@ -16,6 +16,7 @@ function BookEdit(props: GenProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { isbn } = useParams();
+  const origin = useSearchParams()[0].get('origin') ?? '/app';
   
   useEffect(() => {
     initBook();
@@ -95,7 +96,7 @@ function BookEdit(props: GenProps) {
           <br />
           <div className="buttonWrapper">
             <Button variant="success" onClick={() => saveBook()}><FiEdit />Save</Button>
-            <Button variant="warning" onClick={() => setNavigate('/app')}><FiCornerUpLeft />Back to list</Button>
+            <Button variant="warning" onClick={() => setNavigate(origin)}><FiCornerUpLeft />Back to list</Button>
             <Button className="deleteButton" variant="danger" onClick={() => setShowDeleteModal(true)}><FiTrash2 /> Delete permanently</Button>
           </div>
         </Form>
