@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Container, Col, Card, InputGroup, Form, Button, Spinner, Pagination, Toast, ToastContainer } from 'react-bootstrap';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import './Home.scss';
 import { GenProps } from '../../types/generic';
 import AuthContext from '../../components/AuthContext';
 import { Book } from '../../types/book';
 import BookCard from '../../components/BookCard';
 import BookService from '../../services/bookService';
-import { Link } from 'react-router-dom';
 import { FiSearch, FiShare2 } from 'react-icons/fi';
 import { useDebounce, useHasChanged } from '../../utils';
 import { AiFillLock } from 'react-icons/ai';
@@ -20,7 +19,7 @@ type HomeProps = GenProps & {
 
 function Home(props: HomeProps) {
   // State
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [books, setBooks] = useState<Array<Book>>([]);
   const [booksCount, setBooksCount] = useState(0);
   const [currentPage, setCurrentPage] = useState<number | undefined>(undefined);
@@ -29,18 +28,19 @@ function Home(props: HomeProps) {
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [userNameShare, setUserNameShare] = useState<string | undefined>(undefined);
-
+  
   // Constant
   const _listSize = 100;
   const _paginationReach = 2;
-
+  
   // Context
   const loggedIn = useContext(AuthContext);
-
+  
   // Circumstancial
   const { currentPage: currentPageInit, shareId: shareIdRaw } = useParams();
   const searchInit = useSearchParams()[0].get('search') ?? '';
   const currentPageChanged = useHasChanged(currentPage);
+  const navigate = useNavigate();
   
   const shareId = shareIdRaw ?? '';
   const shareMode = !!shareId;
@@ -57,10 +57,17 @@ function Home(props: HomeProps) {
       setCurrentPageChangedPending(true);
     }
     if ((currentPageChanged || currentPageChangedPending) && (loggedIn || shareMode)) {
-      updateBookList(currentPage);
+      updateBookList(currentPage, search);
       setCurrentPageChangedPending(false);
     }
   }, [currentPage, loggedIn]);
+
+  useEffect(() => {
+    const searchValueFromUrl = searchParams.get('search') ?? '';
+    if (searchValueFromUrl !== search) {
+      updateBookList(0, searchValueFromUrl);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     updateShare();
@@ -80,21 +87,35 @@ function Home(props: HomeProps) {
     await updateBookList();
   };
   
-  const updateBookList = async (requestedPage: number = 0): Promise<void> => {
+  const updateSearchUrl = (upcomingPage: number, upcomingSearch: string) => {
+    if (currentPage !== undefined) {
+      const currentSearchParam = searchParams.get('search') ?? '';
+      const needUrlUpdate = upcomingSearch !== currentSearchParam || upcomingPage !== currentPage;
+  
+      if (needUrlUpdate) {
+        navigate(buildPaginationUrl(upcomingPage, upcomingSearch));
+      }
+    }
+  };
+
+  const updateBookList = async (requestedPage: number = 0, requestedSearch: string = ''): Promise<void> => {
     setLoading(true);
-    setSearchParams({ search });
     
     const result = shareMode ? 
-      await ShareService.search(shareId, search, requestedPage, _listSize)
-      : await BookService.search(search, requestedPage, _listSize);
+      await ShareService.search(shareId, requestedSearch, requestedPage, _listSize)
+      : await BookService.search(requestedSearch, requestedPage, _listSize);
     const maxPage = Math.floor((result.count-1)/_listSize);
-    let currentPage = requestedPage;
-    if (currentPage === undefined || currentPage > maxPage || currentPage < 0) {
-      currentPage = 0;
+
+    let upcomingPage = requestedPage;
+    if (upcomingPage === undefined || upcomingPage > maxPage || upcomingPage < 0) {
+      upcomingPage = 0;
     }
+    updateSearchUrl(upcomingPage, requestedSearch);
+
+    setSearch(requestedSearch);
+    setCurrentPage(upcomingPage);
     setBooks(result.books);
     setBooksCount(result.count);
-    setCurrentPage(currentPage);
     setLoading(false);
   };
 
@@ -103,7 +124,7 @@ function Home(props: HomeProps) {
     const search = e.currentTarget.value;
     setSearch(search);
     if (search.length >= 3 || search.length === 0) {
-      updateBookListDebounced();
+      updateBookListDebounced(0, search);
     }
   };
 
@@ -169,7 +190,7 @@ function Home(props: HomeProps) {
         shareMode ?
           <BookCard book={book} key={book.isbn}></BookCard>
           :
-          <Link to={`/app/bookEdit/${book.isbn}`} key={book.isbn}>
+          <Link to={`/app/bookEdit/${book.isbn}?origin=${window.location.pathname + window.location.search}`} key={book.isbn}>
             <BookCard book={book}></BookCard>
           </Link>
       )
