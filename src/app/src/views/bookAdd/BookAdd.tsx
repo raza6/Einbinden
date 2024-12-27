@@ -45,7 +45,7 @@ function BookAdd(props: GenProps) {
 
   const handleISBNSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (manualISBN.length >= 10 && /9[0-9-]+/.test(manualISBN)) {
+    if (manualISBN.length >= 10 && /\d[0-9-]+/.test(manualISBN)) {
       addBook(manualISBN);
     } else {
       setShowToast(true);
