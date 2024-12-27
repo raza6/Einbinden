@@ -8,7 +8,8 @@ interface User {
   name: string,
   avatar: string,
   origin: EAuthOrigin.Github,
-  lastConnection: Date
+  lastConnection: Date,
+  tags: string[],
 }
 
 export {

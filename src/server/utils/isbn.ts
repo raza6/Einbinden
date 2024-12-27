@@ -36,7 +36,7 @@ function checkControlKeyISBN(isbn: string): boolean {
 function parseISBN(isbn: string): string {
   isbn = isbn.replace('-', '');
   if (isbn.length === 10 || isbn.length === 13) {
-    if (/^\d+$/.test(isbn)) {
+    if (/^\d+X?$/.test(isbn)) {
       if (checkControlKeyISBN(isbn)) {
         return isbn;
       }

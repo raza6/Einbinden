@@ -3,33 +3,70 @@
     margin-bottom: 16px;
   }
 
-  #infoWrapper {
+  #loggedWrapper {
     display: flex;
-    flex-direction: column;
-    gap: 24px;
-    margin-left: 32px;
-
-    #userWrapper {
+    flex-wrap: wrap;
+    gap: 20px;
+    
+    #infoWrapper {
+      flex: 1 1 0;
+      min-width: 400px;
       display: flex;
-      gap: 64px;
-      align-items: center;
-      
-        img {
-          width: 128px;;
-        }
-    }
-
-    #loginStatus {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-
-      a button {
+      flex-direction: column;
+      gap: 24px;
+      margin-left: 32px;
+  
+      #userWrapper {
+        display: flex;
+        gap: 64px;
+        align-items: center;
+        
+          img {
+            width: 128px;;
+          }
+      }
+  
+      #loginStatus {
         display: flex;
         align-items: center;
+        gap: 32px;
+  
+        a button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+      }
+    }
+
+    #tagWrapper {
+      flex: 1 1 0;
+      min-width: 400px;
+
+      form {
+        input::placeholder {
+          color: inherit;
+        }
+
+        button {
+          border: 1px solid var(--ebd-dark-lighter);
+        }
+      }
+
+      ul {
+        padding: 0;
+        list-style-type: none;
+        margin-left: 1rem;
+        display: flex;
         gap: 8px;
+        flex-wrap: wrap;
+        font-size: large;
+
+        svg {
+          cursor: pointer;
+          margin-left: 6px;
+        }
       }
     }
   }
-
 }

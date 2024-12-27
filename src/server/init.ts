@@ -11,6 +11,7 @@ import MongoDB from './mongo/mongo';
 import MongoStore from 'connect-mongo';
 import bookController from './controllers/bookController';
 import shareController from './controllers/shareController';
+import tagController from './controllers/tagController';
 
 const init = async (): Promise<void> => {
   const serv = express();
@@ -58,6 +59,7 @@ const init = async (): Promise<void> => {
   authController(serv, passport);
   bookController(serv);
   shareController(serv);
+  tagController(serv);
 
   // Set Einbinden online
   serv.listen(PORT);

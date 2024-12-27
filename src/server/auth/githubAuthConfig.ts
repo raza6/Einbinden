@@ -29,6 +29,7 @@ const githubAuthConfig = (passport: PassportStatic) => {
             avatar: jsonGithubUser.avatar_url,
             origin: EAuthOrigin.Github,
             lastConnection: new Date(),
+            tags: [],
           };
 
           let userExist = false;

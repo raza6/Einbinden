@@ -11,7 +11,14 @@ interface BookBase {
 
 interface Book extends BookBase {
   userId: string;
-  addedAtCollectionTime: Date
+  addedAtCollectionTime: Date;
+  tags: Array<string>;
+  // lend: LendData | undefined;
+}
+
+interface LendData {
+  to: string;
+  date: Date;
 }
 
 interface BookSearchResponse {

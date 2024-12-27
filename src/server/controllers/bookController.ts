@@ -82,11 +82,12 @@ const bookController = (serv: Express) => {
    * @api {PUT} /ebd/book/:isbn Edit a book
    *
    * @apiParam {string} isbn ISBN of the book
+   * @apiBody {Book} book The edited book as a full object
    * @apiError (401) {null} UserNotAuthenticated
    */
   serv.put('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
     const result = await bookService.editBook(req.params.isbn, req.body.book, (req.user as User).id.toString());
-    res.status(200).send(result);
+    res.status(result ? 200 : 400).send(result);
   });
 };
 

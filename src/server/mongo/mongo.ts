@@ -1,6 +1,7 @@
 import {
   MongoClient, MongoError, FindCursor,
-  Sort
+  Sort,
+  PullOperator
 } from 'mongodb';
 import colors from 'colors';
 import { NoCollectionError } from '../utils/utils';
@@ -97,6 +98,25 @@ export default class MongoDB {
   public async addUser(user: User): Promise<void> {
     await this.run(
       () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionUsers).insertOne(user),
+    );
+  }
+
+  public async addTag(tag: string, userId: string): Promise<void> {
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionUsers).updateOne(
+        { id: userId },
+        { $addToSet: { tags: tag } }
+      ),
+    );
+  }
+
+  // TODO WHEN DELETE TAG, REMOVE ALSO FROM BOOKS
+  public async deleteTag(tag: string, userId: string): Promise<void> {
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionUsers).updateOne(
+        { id: userId },
+        { $pull: { tags: tag } as unknown as PullOperator<User> }
+      ),
     );
   }
 

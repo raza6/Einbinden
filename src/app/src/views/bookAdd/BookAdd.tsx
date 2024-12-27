@@ -45,7 +45,7 @@ function BookAdd(props: GenProps) {
 
   const handleISBNSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (manualISBN.length >= 10 && /\d[0-9-]+/.test(manualISBN)) {
+    if (manualISBN.length >= 10 && /\d[0-9-]+X?/.test(manualISBN)) {
       addBook(manualISBN);
     } else {
       setShowToast(true);
@@ -89,7 +89,7 @@ function BookAdd(props: GenProps) {
           <Form className="m-3" onSubmit={handleISBNSubmit}>
             <InputGroup id="isbnWrapper">
               <Form.Control
-                type="text" pattern="\d*" inputMode="numeric" maxLength={50} placeholder="ISBN" onInput={handleISBNInput}
+                type="text" pattern="\d*X?" inputMode="numeric" maxLength={50} placeholder="ISBN" onInput={handleISBNInput}
               />
               <Button variant="outline-secondary" id="bookSearchInput" type="submit">
                 <FiPlus />

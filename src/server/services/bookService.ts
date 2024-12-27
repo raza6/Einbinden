@@ -16,7 +16,9 @@ export default class bookService {
         const book = {
           ...bookBase,
           userId,
-          addedAtCollectionTime: new Date()
+          addedAtCollectionTime: new Date(),
+          tags: [],
+          // lend: undefined,
         };
         await mongo.addBook(book);
         return book;
