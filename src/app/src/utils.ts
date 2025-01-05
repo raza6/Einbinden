@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 
 const debounce = (func: Function, timeout = 300): Function => {
-  let timer: NodeJS.Timeout;
+  let timer: number;
   return (...args: any) => {
     const context = this;
     clearTimeout(timer);
@@ -10,7 +10,7 @@ const debounce = (func: Function, timeout = 300): Function => {
 };
 
 function useDebounce(callback: Function) {
-  const ref = useRef();
+  const ref = useRef(undefined);
 
   useEffect(() => {
     // @ts-ignore
@@ -30,7 +30,7 @@ function useDebounce(callback: Function) {
 }
 
 const usePrevious = (value: any) => {
-  const ref = useRef();
+  const ref = useRef(undefined);
   useEffect(() => {
     ref.current = value;
   });

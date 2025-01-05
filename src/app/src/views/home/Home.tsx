@@ -234,7 +234,7 @@ function Home(props: HomeProps) {
                         <li>
                           <Link to="/app/bookAdd">
                             <Card>
-                              <Card.Img variant="top" src={`${process.env.PUBLIC_URL}/addBook.png`} />
+                              <Card.Img variant="top" src={`${import.meta.env.BASE_URL}addBook.png`} />
                               <Card.ImgOverlay>
                                 <Card.Body>
                                   <Card.Title>Add a book</Card.Title>

@@ -19,8 +19,8 @@ function App() {
   const [user, setUser] = useState<User | undefined>(undefined);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setPageName] = useState('Einbinden');
-  const [appName] = useState(process.env.REACT_APP_NAME ?? '');
-  const [appVersion] = useState(process.env.REACT_APP_VERSION ?? 'x.x.x');
+  const [appName] = useState(import.meta.env.VITE_REACT_APP_NAME ?? '');
+  const [appVersion] = useState(import.meta.env.VITE_REACT_APP_VERSION ?? 'x.x.x');
 
   const handleLoginCheck = async () => {
     const authResult = await AuthService.checkAuth();
@@ -37,7 +37,7 @@ function App() {
       <Container fluid className="app" id="mainWrapper">
         <Row id="navbar">
           <Link to="/app" className="laptop mainTitleWrapper">
-            <Image alt="Einbinden" src={`${process.env.PUBLIC_URL}/einbinden.png`}></Image>
+            <Image alt="Einbinden" src={`${import.meta.env.BASE_URL}einbinden.png`}></Image>
             <div className="titleWrapper">
               <h1>Einbinden</h1>
               <span>All yours books, right there, right now</span>
