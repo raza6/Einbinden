@@ -36,13 +36,26 @@ const tagController = (serv: Express) => {
   /**
    * @apiName TagDelete
    * @apiGroup Tag
-   * @api {DELETE} /ebd/tag Delete a tag for this user
+   * @api {POST} /ebd/tag Delete a tag for this user
    *
    * @apiBody {Tag} tag The tag to be deleted
    * @apiError (401) {null} UserNotAuthenticated
    */
   serv.post('/ebd/tag/delete', ensureAuthenticated, async (req: Request, res: Response) => {
     const result = await tagService.deleteUserTag(req.body.tag, (req.user as User).id.toString());
+    res.status(result ? 200 : 400).send(result);
+  });
+
+  /**
+   * @apiName TagBookUpdate
+   * @apiGroup Tag
+   * @api {POST} /ebd/tag/book Update tags of a book
+   *
+   * @apiBody {Tag} tag The tag to be deleted
+   * @apiError (401) {null} UserNotAuthenticated
+   */
+  serv.post('/ebd/tag/book', ensureAuthenticated, async (req: Request, res: Response) => {
+    const result = await tagService.updateBookTag(req.body.bookISBN, req.body.tags, (req.user as User).id.toString());
     res.status(result ? 200 : 400).send(result);
   });
 };

@@ -110,12 +110,27 @@ export default class MongoDB {
     );
   }
 
-  // TODO WHEN DELETE TAG, REMOVE ALSO FROM BOOKS
   public async deleteTag(tag: string, userId: string): Promise<void> {
     await this.run(
       () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionUsers).updateOne(
         { id: userId },
         { $pull: { tags: tag } as unknown as PullOperator<User> }
+      ),
+    );
+
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).updateMany(
+        { userId: userId },
+        { $pull: { tags: tag } as unknown as PullOperator<Book> }
+      ),
+    );
+  }
+
+  public async updateBookTag(bookISBN: string, tags: string[], userId: string) {
+    await this.run(
+      () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).updateOne(
+        { isbn: bookISBN, userId: userId },
+        { $set: { tags: tags } }
       ),
     );
   }
