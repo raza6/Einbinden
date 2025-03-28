@@ -6,6 +6,7 @@ interface Book {
   publishedDate: Date;
   isbn: string;
   cover: string;
+  tags: string[];
 }
 
 interface BookSearchResponse {

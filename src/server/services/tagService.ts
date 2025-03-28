@@ -9,7 +9,7 @@ export default class tagService {
         console.log(`🧨 No user found for userId : ${userId}`);
         return [];
       } else {
-        return user.tags;
+        return user.tags.sort();
       }
     } catch (error) {
       console.log(`🧨 Tag retrieval failed, reason : ${(<Error>error).message}`);
@@ -66,7 +66,7 @@ export default class tagService {
     }
   }
 
-  public static async updateBookTag(bookISBN: string, tags: string[], userId: string): Promise<boolean> {
+  public static async updateBookTag(bookISBN: string, tags: Array<string>, userId: string): Promise<boolean> {
     try {
       if (bookISBN && tags) {
         const mongo = new MongoDB();

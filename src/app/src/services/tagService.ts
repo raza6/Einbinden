@@ -22,6 +22,13 @@ class TagService {
     console.info('👏 - Delete user tag', res);
     return res;
   }
+
+  public static async updateBookTags(bookISBN: string, tags: Array<string>): Promise<boolean> {
+    console.info('📫 - Update book tags');
+    const res = await MainService.handleApiCall(EHttpVerb.POST, `${config.API_URL}/tag/book`, { bookISBN, tags });
+    console.info('👏 - Update book tags', res);
+    return res;
+  }
 }
 
 export default TagService;

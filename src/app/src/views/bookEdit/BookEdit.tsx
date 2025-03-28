@@ -6,9 +6,13 @@ import { Book } from '../../types/book';
 import BookService from '../../services/bookService';
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { FiCornerUpLeft, FiEdit, FiTrash2 } from 'react-icons/fi';
+import Select from 'react-select';
+import TagService from '../../services/tagService';
 
 function BookEdit(props: GenProps) {
   const [book, setBook] = useState<Book | undefined>(undefined);
+  const [userTags, setUserTags] = useState<Array<string>>([]);
+  const [bookTags, setBookTags] = useState<Array<string>>([]);
   const [navigate, setNavigate] = useState<string | undefined>(undefined);
   const [showToast, setShowToast] = useState(false);
   const [editBookResult, setEditBookResult] = useState(false);
@@ -24,8 +28,11 @@ function BookEdit(props: GenProps) {
   }, []);
   
   const initBook = async () => {
+    const userTagsRes = await TagService.getTags();
+    setUserTags(userTagsRes);
     const bookRes = await BookService.get(isbn ?? '');
     setBook(bookRes);
+    setBookTags(bookRes.tags);
   };
 
   const saveBook = async () => {
@@ -38,6 +45,7 @@ function BookEdit(props: GenProps) {
       setShowToast(true);
       setEditBookResult(res);
       setEditBookResultDetail(res ? 'Book edited' : 'Book not edited');
+      const tagRes = await TagService.updateBookTags(book.isbn, bookTags); 
     }
   };
 
@@ -51,6 +59,16 @@ function BookEdit(props: GenProps) {
       setEditBookResultDetail(`${book?.title} have not been deleted`);
     }
   };
+
+  // @ts-ignore
+  const handleTagChange = async (e) => {
+    if (e.action === 'remove-value') {
+      setBookTags(bookTags.filter(t => t === e.value))
+    } else {
+      // @ts-ignore
+      setBookTags(e.map(t => t.value));
+    }
+  }
   
   return (
     <Col className="bookEditWrapper">
@@ -92,6 +110,62 @@ function BookEdit(props: GenProps) {
             <Form.Control value={book?.cover ?? ''} maxLength={1024} type="text" placeholder="https://..." 
               onChange={(e) => setBook({ ...book, cover: e.currentTarget.value } as Book)}
             />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Tags</Form.Label>
+            <Select
+              isMulti
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  backgroundColor: 'var(--ebd-dark-lighter)',
+                  borderColor: 'var(--ebd-dark-lighter)',
+                  color: 'var(--ebd-light-base)',
+                  boxShadow: state.isFocused ? '0 0 0 0.25rem rgba(44, 44, 44, 0.25)' : 'none',
+                  '&:hover': 'none'
+                }),
+                menu: (baseStyles) => ({
+                  ...baseStyles,
+                  backgroundColor: 'var(--ebd-dark-lighter)',
+                  borderColor: 'var(--ebd-dark-lighter)',
+                  color: 'var(--ebd-light-base)'
+                }),
+                option: (baseStyles, state) => ({
+                  ...baseStyles,
+                  backgroundColor: state.isFocused ? 'var(--ebd-dark-lighter2)' : 'var(--ebd-dark-lighter)',
+                  cursor: 'pointer'
+                }),
+                multiValue: (baseStyles) => ({
+                  ...baseStyles,
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--ebd-light-base)',
+                  color: 'var(--ebd-dark-base)',
+                  fontSize: '18px'
+                }),
+                multiValueRemove: (baseStyles) => ({
+                  ...baseStyles,
+                  borderRadius: '8px'
+                }),
+                clearIndicator: (baseStyles) => ({
+                  ...baseStyles,
+                  color: 'var(--ebd-light-base)',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: 'var(--ebd-light-base2)'
+                  }
+                }),
+                dropdownIndicator: (baseStyles, state) => ({
+                  ...baseStyles,
+                  color: 'var(--ebd-light-base)',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    color: 'var(--ebd-light-base2)'
+                  }
+                }),
+              }}
+              options={userTags.map(tag => ({ value: tag, label: tag }))}
+              value={bookTags.map(tag => ({ value: tag, label: tag }))}
+              onChange={handleTagChange}/>
           </Form.Group>
           <br />
           <div className="buttonWrapper">

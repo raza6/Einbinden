@@ -126,7 +126,7 @@ export default class MongoDB {
     );
   }
 
-  public async updateBookTag(bookISBN: string, tags: string[], userId: string) {
+  public async updateBookTag(bookISBN: string, tags: Array<string>, userId: string) {
     await this.run(
       () => this.client.db(MongoDB.dbName).collection(MongoDB.collectionBooks).updateOne(
         { isbn: bookISBN, userId: userId },
