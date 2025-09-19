@@ -52,6 +52,7 @@ const init = async (): Promise<void> => {
   // Express config
   serv.use(bodyParser.json());
   serv.use(bodyParser.urlencoded({ extended: true }));
+  serv.use('/ebd/static/img', express.static('static/img'));
 
   console.log(`Server ${colors.bold.blue('OK')}`);
 

@@ -36,10 +36,10 @@ function BookEdit(props: GenProps) {
   };
 
   const saveBook = async () => {
-    if (!book?.title || book.authors.length === 0 || book.authors.some(a => !a) || !book.cover) {
+    if (!book?.title || book.authors.length === 0 || book.authors.some(a => !a)) {
       setShowToast(true);
       setEditBookResult(false);
-      setEditBookResultDetail('Fields title, authors and cover are required');
+      setEditBookResultDetail('Fields title and authors are required');
     } else {
       const res = await BookService.edit(book);
       setShowToast(true);
@@ -106,7 +106,7 @@ function BookEdit(props: GenProps) {
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Cover URL</Form.Label>
+            <Form.Label>Cover</Form.Label>
             <Form.Control value={book?.cover ?? ''} maxLength={1024} type="text" placeholder="https://..." 
               onChange={(e) => setBook({ ...book, cover: e.currentTarget.value } as Book)}
             />
