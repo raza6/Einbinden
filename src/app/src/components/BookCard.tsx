@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Book } from '../types/book';
 import './BookCard.scss';
+import { selectCover } from '../utils';
 
 interface BookCardProps {
   book: Book;
@@ -11,7 +12,7 @@ function BookCard(props: BookCardProps) {
   return (
     <li>
       <Card>
-        <Card.Img variant="top" src={props.book.cover === '' ? `${import.meta.env.BASE_URL}nocover.png` : props.book.cover} />
+        <Card.Img variant="top" src={selectCover(props.book.cover)} />
         <Card.ImgOverlay>
           <Card.Body className="bookTitle">
             <Card.Title title={`${props.book.title} (${[props.book.subtitle, props.book.publisher, props.book.publishedDate].filter(v => !!v).join(', ')})`}>

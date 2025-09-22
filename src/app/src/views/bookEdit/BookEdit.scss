@@ -17,8 +17,28 @@
     }
   }
 
-  form input::placeholder {
-    color: #847c6d;
+  form {
+    input::placeholder {
+      color: #847c6d;
+    }
+
+    #bookCoverButton {
+      padding: 0;
+      margin-left: 8px;
+      
+      label {
+        padding: 6px 12px 6px 12px;
+        cursor: pointer;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      #bookCoverInput {
+        display: none;
+      }
+    }
   }
 
   .buttonWrapper {

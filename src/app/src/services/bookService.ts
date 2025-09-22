@@ -24,6 +24,20 @@ class BookService {
     return res;
   }
 
+  public static async editCover(isbn: string, bookCover: File): Promise<boolean> {
+    console.info('📫 - Edit book cover');
+    const formData = new FormData();
+    formData.append('cover', bookCover);
+    const requestConfig = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    };
+    const res = await MainService.handleApiCall(EHttpVerb.POST, `${config.API_URL}/book/${isbn}/cover`, formData, requestConfig);
+    console.info('👏 - Edit book cover', res);
+    return res;
+  }
+
   public static async delete(isbn: string): Promise<boolean> {
     console.info('📫 - Delete book');
     const res = await MainService.handleApiCall(EHttpVerb.DELETE, `${config.API_URL}/book/${isbn}`);

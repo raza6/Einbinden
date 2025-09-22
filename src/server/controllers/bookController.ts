@@ -1,6 +1,6 @@
 import { Request, Response, Express } from 'express';
 import { Jimp } from 'jimp';
-import formidable from 'formidable';
+import multer from 'multer';
 import { ensureAuthenticated } from '../utils/utils';
 import bookService from '../services/bookService';
 import { User } from '../types/user';
@@ -101,62 +101,48 @@ const bookController = (serv: Express) => {
    * @apiBody {File} files.img The cover image of the book
    *
    * @apiError (400) {string} NoFileAttached No image file attached with the request
-   * @apiError (400) {string} ManyFileAttached More than one image file attached with the request
+   * @apiError (400) {string} BookNotFound No book found for provided isbn
    * @apiError (400) {string} FileAttachedFormat File attached with the request are not .png or .jpg
    * @apiError (400) {string} FileAttachedSize File attached with the request are more than 4MB in size
-   * @apiError (400) {string} NoFileAttached No image file attached with the request
    * @apiError (400) {string} ImageManipulation Fatal error while manipulating the image
    * @apiError (401) {null} UserNotAuthenticated
    */
-  serv.post('/ebd/book/:isbn/cover', ensureAuthenticated, async (req: Request, res: Response) => {
-    const form = formidable({
-      fileWriteStreamHandler //TODO in memory only, jimp write
-    });
+  const storage = multer.memoryStorage()
+  const upload = multer({ storage: storage });
+  serv.post('/ebd/book/:isbn/cover', upload.single('cover'), ensureAuthenticated, async (req: Request, res: Response) => {
+    let error: string|undefined;
+    if (req.file === undefined || req.file === null) {
+      error = 'No file attached';
+    } else {
+      const reqFile = req.file;
 
-    form.parse(req, (err, fields, files) => {
-      let error;
-      if (err) {
-        error = 'Error while parsing request';
+      if (!['image/jpeg', 'image/png'].includes(reqFile.mimetype)) {
+        error = 'Attached file is not a .png or a .jpg';
+      } else if (reqFile.size >= 4 * 1024 * 1024) {
+        error = 'Attached file size is more than 4MB';
       } else {
-        // check if file is valid
-        if (files === undefined || files === null) {
-          error = 'No img file attached';
-        } else if (Array.isArray(files.img)) {
-          error = 'More than 1 img file attached';
+        const isbn = req.params.isbn;
+        const userId = (req.user as User).id.toString();
+        const book = await bookService.getBook(isbn, userId);
+        if (book === null) {
+          error = `Book ${isbn} does not exist for ${userId}`;
         } else {
-          const reqFile = req.files.img;
-  
-          if (!['image/jpeg', 'image/png'].includes(reqFile.mimetype)) {
-            error = 'Attached file is not a .png or a .jpg';
-          } else if (reqFile.size >= 4 * 1024 * 1024) {
-            error = 'Attached file size is more than 4MB';
-          } else {
-            const isbn = req.params.isbn;
-            const userId = (req.user as User).id.toString();
-            const book = await bookService.getBook(isbn, userId);
-            if (book === null) {
-              error = `Book ${isbn} does not exist for ${userId}`;
-            } else {
-              Jimp.read(reqFile.tempFilePath)
-                .then(async (image) => {
-                  await image
-                    .cover({ w: 600, h: 400 })
-                    .write(`./static/img/${isbn}.jpg`);
-                  book.cover = `/ebd/static/img/${isbn}.jpg`;
-                  await bookService.editBook(isbn, book, userId);
-                })
-                .catch((err) => {
-                  error = `Error while manipulating image : ${err}`;
-                });
-            }
+          try {
+            const image = await Jimp.read(reqFile.buffer);
+            await image
+              .cover({ w: 400, h: 566 })
+              .write(`./static/img/${isbn}.jpg`);
+            book.cover = `/static/img/${isbn}.jpg`;
+            await bookService.editBook(isbn, book, userId);
+          } catch (err) {
+            error = `Error while manipulating image : ${err}`;
           }
         }
       }
-
-
-      console.log(error ? `😔 img not added : ${error}` : '😀 img added');
-      res.status(error ? 400 : 200).send(error);
-    });
+    }
+    
+    console.log(error ? `😔 img not added : ${error}` : '😀 img added');
+    res.status(error ? 400 : 200).send(error ?? true);
   });
 };
 
