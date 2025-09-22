@@ -81,7 +81,7 @@ const authController = (serv: Express, passport: PassportStatic) => {
       'github',
       {
         failureRedirect: '/ebd/auth/error',
-        successRedirect: EnvWrap.get().value('AUTH_APP_URL'),
+        successRedirect: EnvWrap.get().value('AUTH_APP_URL') + '/app',
       },
     ),
   );

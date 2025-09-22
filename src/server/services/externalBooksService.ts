@@ -100,7 +100,7 @@ export default class externalBooksService {
       publishedDate: books.map(book => book.publishedDate).filter(v => v !== undefined)?.[0] ?? '',
       isbn: books[0].isbn,
       hasIsbn: true,
-      cover: books.map(book => book.cover).filter(v => v !== undefined)?.[0] ?? `https://images.isbndb.com/covers/${[...books[0].isbn].splice(-4, 2).join('')}/${[...books[0].isbn].splice(-2).join('')}/${books[0].isbn}.jpg`
+      cover: books.map(book => book.cover).filter(v => v !== undefined)?.[0] ?? '',
     };
 
     if (finalBook.title === '') {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
+import config from './config';
 
 const debounce = (func: Function, timeout = 300): Function => {
   let timer: number;
@@ -9,7 +10,7 @@ const debounce = (func: Function, timeout = 300): Function => {
   };
 };
 
-function useDebounce(callback: Function) {
+const useDebounce = (callback: Function): Function => {
   const ref = useRef(undefined);
 
   useEffect(() => {
@@ -37,13 +38,23 @@ const usePrevious = (value: any) => {
   return ref.current;
 };
 
-const useHasChanged= (value: any) => {
+const useHasChanged = (value: any): boolean => {
   const previousValue = usePrevious(value);
   return previousValue !== value;
 };
 
-function getRandomOfList (list: Array<string>): string {
+const getRandomOfList = (list: Array<string>): string => {
   return list[Math.floor((Math.random()*list.length))];
 }
 
-export { debounce, useDebounce, getRandomOfList, useHasChanged };
+const selectCover = (coverUrl: string): string => {
+  if (coverUrl === '') {
+    return `${import.meta.env.BASE_URL}nocover.png`;
+  } else if (coverUrl.startsWith('/static')) {
+    return `${config.API_URL}${coverUrl}`;
+  } else {
+    return coverUrl;
+  }
+}
+
+export { debounce, useDebounce, getRandomOfList, useHasChanged, selectCover };

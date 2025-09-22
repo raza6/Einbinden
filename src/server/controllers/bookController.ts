@@ -1,4 +1,6 @@
 import { Request, Response, Express } from 'express';
+import { Jimp } from 'jimp';
+import multer from 'multer';
 import { ensureAuthenticated } from '../utils/utils';
 import bookService from '../services/bookService';
 import { User } from '../types/user';
@@ -61,22 +63,22 @@ const bookController = (serv: Express) => {
     res.status(200).send(result);
   });
 
-   /**
+  /**
    * @apiName BookAddISBN
    * @apiGroup Book
-   * @api {POST} /ebd/book/:isbn Try to add book via ISBN through google API
+   * @api {POST} /ebd/book/:isbn Try to add book via ISBN
    *
    * @apiparam {string} isbn ISBN of the book
    *
    * @apiUse BookSuccess
-   * @apiError (400) {null} BookNotFound Book with isbn <code>isbn</code> was not found by google API
+   * @apiError (400) {null} BookNotFound Book with isbn <code>isbn</code>
    */
     serv.post('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
       const result = await bookService.addBookViaIsbn(req.params.isbn, (req.user as User).id.toString());
       res.status(result ? 200 : 400).send(result);
     });
 
-      /**
+  /**
    * @apiName BookDetail
    * @apiGroup Book
    * @api {PUT} /ebd/book/:isbn Edit a book
@@ -88,6 +90,59 @@ const bookController = (serv: Express) => {
   serv.put('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
     const result = await bookService.editBook(req.params.isbn, req.body.book, (req.user as User).id.toString());
     res.status(result ? 200 : 400).send(result);
+  });
+
+  /**
+   * @apiName BookCover
+   * @apiGroup Book
+   * @api {POST} /ebd/book/:isbn/cover Add cover to a book
+   *
+   * @apiparam {string} isbn ISBN of the book
+   * @apiBody {File} files.img The cover image of the book
+   *
+   * @apiError (400) {string} NoFileAttached No image file attached with the request
+   * @apiError (400) {string} BookNotFound No book found for provided isbn
+   * @apiError (400) {string} FileAttachedFormat File attached with the request are not .png or .jpg
+   * @apiError (400) {string} FileAttachedSize File attached with the request are more than 4MB in size
+   * @apiError (400) {string} ImageManipulation Fatal error while manipulating the image
+   * @apiError (401) {null} UserNotAuthenticated
+   */
+  const storage = multer.memoryStorage()
+  const upload = multer({ storage: storage });
+  serv.post('/ebd/book/:isbn/cover', upload.single('cover'), ensureAuthenticated, async (req: Request, res: Response) => {
+    let error: string|undefined;
+    if (req.file === undefined || req.file === null) {
+      error = 'No file attached';
+    } else {
+      const reqFile = req.file;
+
+      if (!['image/jpeg', 'image/png'].includes(reqFile.mimetype)) {
+        error = 'Attached file is not a .png or a .jpg';
+      } else if (reqFile.size >= 4 * 1024 * 1024) {
+        error = 'Attached file size is more than 4MB';
+      } else {
+        const isbn = req.params.isbn;
+        const userId = (req.user as User).id.toString();
+        const book = await bookService.getBook(isbn, userId);
+        if (book === null) {
+          error = `Book ${isbn} does not exist for ${userId}`;
+        } else {
+          try {
+            const image = await Jimp.read(reqFile.buffer);
+            await image
+              .cover({ w: 400, h: 566 })
+              .write(`./static/img/${isbn}.jpg`);
+            book.cover = `/static/img/${isbn}.jpg`;
+            await bookService.editBook(isbn, book, userId);
+          } catch (err) {
+            error = `Error while manipulating image : ${err}`;
+          }
+        }
+      }
+    }
+    
+    console.log(error ? `😔 img not added : ${error}` : '😀 img added');
+    res.status(error ? 400 : 200).send(error ?? true);
   });
 };
 
