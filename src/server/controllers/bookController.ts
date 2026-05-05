@@ -109,7 +109,7 @@ const bookController = (serv: Express) => {
    */
   const storage = multer.memoryStorage()
   const upload = multer({ storage: storage });
-  serv.post('/ebd/book/:isbn/cover', upload.single('cover'), ensureAuthenticated, async (req: Request, res: Response) => {
+  serv.post('/ebd/book/:isbn/cover', ensureAuthenticated, upload.single('cover'), async (req: Request, res: Response) => {
     let error: string|undefined;
     if (req.file === undefined || req.file === null) {
       error = 'No file attached';
