@@ -200,7 +200,7 @@ function BookEdit(props: GenProps) {
           <div className="buttonWrapper">
             <Button variant="success" onClick={() => saveBook()}><FiEdit />Save</Button>
             <Button variant="warning" onClick={() => setNavigate(origin)}><FiCornerUpLeft />Back to list</Button>
-            <Button className="deleteButton" variant="danger" onClick={() => setShowDeleteModal(true)}><FiTrash2 /> Delete permanently</Button>
+            <Button className="deleteButton" variant="danger" onClick={() => setShowDeleteModal(true)}><FiTrash2 />Delete permanently</Button>
           </div>
         </Form>
       </Row>

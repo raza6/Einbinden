@@ -45,8 +45,14 @@
     display: flex;
     gap: 16px;
 
-    button svg {
-      margin-right: 8px;
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      svg {
+        flex-shrink: 0;
+      }
     }
 
     .deleteButton {
@@ -59,12 +65,6 @@
   margin: 12px;
   
   .toast-header {
-    --bs-toast-header-bg: rgba(33, 37, 41, 0.85);
-    --bs-toast-header-color: var(--bs-toast-color);
     justify-content: space-between;
-
-    button {
-      filter: invert(1);
-    }
   }
 }

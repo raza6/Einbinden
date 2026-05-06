@@ -29,6 +29,7 @@
       min-width: 0;
     }
 
+    .add-btn,
     .share-btn {
       flex-shrink: 0;
       width: 38px;
@@ -77,47 +78,6 @@
     }
   }
 
-  .add-book-card {
-    position: relative;
-    border-radius: 6px;
-    overflow: hidden;
-    background-color: var(--ebd-dark-lighter);
-    aspect-ratio: 21 / 29.7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.15s ease-out;
-
-    .add-book-card-icon {
-      width: 28px;
-      height: 28px;
-      color: var(--ebd-light-darker);
-    }
-
-    .add-book-card-fence {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(0deg, #070707 0%, #000 90%, rgba(0, 0, 0, 0.74) 96%, transparent 100%);
-      padding: 8px;
-    }
-
-    .add-book-card-label {
-      display: block;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--ebd-on-dark);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      transition: none;
-    }
-  }
-
   .empty-state {
     padding: 48px 0;
     color: var(--ebd-light-darker);
@@ -142,11 +102,15 @@
     --bs-pagination-hover-bg: var(--ebd-dark-lighter);
     --bs-pagination-hover-border-color: var(--ebd-dark-darker);
     --bs-pagination-focus-color: var(--ebd-theme);
-    --bs-pagination-focus-bg: var(--ebd-lilac-wash);
+    --bs-pagination-focus-bg: var(--ebd-walnut-wash);
     --bs-pagination-focus-box-shadow: none;
     --bs-pagination-active-color: var(--ebd-light-lighter);
     --bs-pagination-active-bg: var(--ebd-theme);
     --bs-pagination-active-border-color: var(--ebd-theme);
+  }
+
+  .toast-header {
+    border-bottom: 0;
   }
 
   @include media-breakpoint-down(md) {

@@ -137,7 +137,6 @@ function Home(props: HomeProps) {
     if (props.user !== undefined) {
       const user = props.user as User;
       const shareUrl = `${window.location.origin}/app/share/${user.origin === EAuthOrigin.Github ? '00' : 'xx'}${parseInt(user.id, 10).toString(16)}`;
-      console.log(`Share url is : ${shareUrl}`);
       navigator.clipboard.writeText(shareUrl);
       setShowToast(true);
     }
@@ -204,27 +203,14 @@ function Home(props: HomeProps) {
 
     return (
       <ul className="book-grid">
-        {!shareMode && (
-          <li>
-            <Link to="/app/bookAdd">
-              <div className="add-book-card">
-                <FiPlus className="add-book-card-icon" aria-hidden="true" />
-                <div className="add-book-card-fence">
-                  <span className="add-book-card-label">Add a book</span>
-                </div>
-              </div>
-            </Link>
-          </li>
-        )}
         {books.map(book => (
-          shareMode ?
-            <li key={book.isbn}><BookCard book={book} /></li>
-            :
-            <li key={book.isbn}>
-              <Link to={`/app/bookEdit/${book.isbn}?origin=${window.location.pathname + window.location.search}`}>
-                <BookCard book={book} />
-              </Link>
-            </li>
+          shareMode
+            ? <li key={book.isbn}><BookCard book={book} /></li>
+            : <li key={book.isbn}>
+                <Link to={`/app/bookEdit/${book.isbn}?origin=${window.location.pathname + window.location.search}`}>
+                  <BookCard book={book} />
+                </Link>
+              </li>
         ))}
       </ul>
     );
@@ -248,6 +234,13 @@ function Home(props: HomeProps) {
     <Col>
       <Container id="homeWrapper">
         <div className="toolbar">
+          {!shareMode && (
+            <Link to="/app/bookAdd">
+              <Button className="add-btn" title="Add a book" aria-label="Add a book">
+                <FiPlus aria-hidden="true" />
+              </Button>
+            </Link>
+          )}
           <Form onSubmit={handleSubmit} className="search-form">
             <InputGroup>
               <Form.Control
@@ -274,7 +267,7 @@ function Home(props: HomeProps) {
         {renderGrid()}
         {booksCount > _listSize && renderPagination()}
         <ToastContainer position="bottom-end">
-          <Toast onClose={() => setShowToast(false)} bg="success" autohide delay={3000} show={showToast}>
+          <Toast onClose={() => setShowToast(false)} autohide delay={3000} show={showToast} bg="success">
             <Toast.Header>
               <strong>Share URL copied to clipboard</strong>
             </Toast.Header>

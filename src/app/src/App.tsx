@@ -40,7 +40,7 @@ function App() {
             <Image alt="Einbinden" src={`${import.meta.env.BASE_URL}einbinden.png`}></Image>
             <div className="titleWrapper">
               <h1>Einbinden</h1>
-              <span>All yours books, right there, right now</span>
+              <span>All your books, right there, right now</span>
             </div>
           </Link>
           <div className="laptop" id="laptopMenuWrapper">

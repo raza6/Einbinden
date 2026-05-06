@@ -82,14 +82,32 @@
   --ebd-light-base2:   #5a5048;   /* ink-mid — secondary text, labels */
   --ebd-light-darker:  #8a7e72;   /* ink-light — muted text, metadata */
 
-  /* Lilac accent */
-  --ebd-theme:       #7a5ca6;     /* lilac — primary accent */
-  --ebd-theme-dark:  #5f4482;     /* lilac-dark — hover on accent elements */
-  --ebd-lilac-soft:  #a687c8;     /* lilac-soft — decorative tint */
-  --ebd-lilac-wash:  #ede5f7;     /* lilac-wash — subtle highlight background */
+  /* Walnut accent */
+  --ebd-theme:        #6b4226;    /* walnut — primary accent */
+  --ebd-theme-dark:   #4f2f1a;    /* walnut-dark — hover on accent elements */
+  --ebd-walnut-soft:  #8a5a3c;    /* walnut-soft — decorative tint */
+  --ebd-walnut-wash:  #f5dfd2;    /* walnut-wash — subtle highlight background */
 
   /* Success */
   --ebd-accent: #3d7a5e;          /* leaf — success states */
+
+  /* Success scale */
+  --ebd-success-fg:            #1e4d38;   /* dark forest green — text */
+  --ebd-success-fg-dark:       #153d2c;   /* darker forest green — text hover */
+  --ebd-success-bg:            #e2f4ec;   /* pale sage — surface */
+  --ebd-success-bg-hover:      #cce9d8;   /* pale sage — hover */
+  --ebd-success-border:        #7fbda0;   /* sage — border */
+  --ebd-success-border-hover:  #69a88a;   /* sage — border hover */
+  --ebd-success-header-border: #b2d9c2;   /* light sage — header border */
+
+  /* Danger scale */
+  --ebd-danger-fg:             #4d2118;   /* dark reddish — text */
+  --ebd-danger-fg-dark:        #3e180e;   /* darker reddish — text hover */
+  --ebd-danger-bg:             #f4e3dc;   /* pale rose — surface */
+  --ebd-danger-bg-hover:       #eccec6;   /* pale rose — hover */
+  --ebd-danger-border:         #c08578;   /* rose — border */
+  --ebd-danger-border-hover:   #b27168;   /* rose — border hover */
+  --ebd-danger-header-border:  #debbb2;   /* light rose — header border */
 
   /* Always-dark: text on book card fences (dark gradient, light mode agnostic) */
   --ebd-on-dark:  #ecdbba;        /* warm cream for text on dark fences */
@@ -118,17 +136,17 @@
     }
   }
 
-  /* Primary button: lilac accent */
+  /* Primary button: beige surface, walnut text and icon */
   .btn-primary {
-    --bs-btn-color: var(--ebd-light-lighter);
-    --bs-btn-bg: var(--ebd-theme);
-    --bs-btn-border-color: var(--ebd-theme);
-    --bs-btn-hover-color: var(--ebd-light-lighter);
-    --bs-btn-hover-bg: var(--ebd-theme-dark);
-    --bs-btn-hover-border-color: var(--ebd-theme-dark);
-    --bs-btn-active-color: var(--ebd-light-lighter);
-    --bs-btn-active-bg: var(--ebd-theme-dark);
-    --bs-btn-active-border-color: var(--ebd-theme-dark);
+    --bs-btn-color: var(--ebd-theme);
+    --bs-btn-bg: var(--ebd-dark-lighter);
+    --bs-btn-border-color: var(--ebd-dark-darker);
+    --bs-btn-hover-color: var(--ebd-theme-dark);
+    --bs-btn-hover-bg: var(--ebd-dark-lighter2);
+    --bs-btn-hover-border-color: var(--ebd-dark-darker);
+    --bs-btn-active-color: var(--ebd-theme-dark);
+    --bs-btn-active-bg: var(--ebd-dark-lighter2);
+    --bs-btn-active-border-color: var(--ebd-dark-darker);
   }
 
   /* Outline-secondary button: used in InputGroup search/tag buttons */
@@ -143,7 +161,7 @@
     --bs-btn-active-border-color: var(--ebd-dark-darker);
   }
 
-  /* Secondary button: linen surface */
+  /* Secondary button: linen surface, no border, recessive */
   .btn-secondary {
     --bs-btn-color: var(--ebd-light-base);
     --bs-btn-bg: var(--ebd-dark-lighter);
@@ -156,15 +174,88 @@
     --bs-btn-active-border-color: var(--ebd-dark-lighter2);
   }
 
+  /* Success button: pale sage surface, forest green text */
+  .btn-success {
+    --bs-btn-color: var(--ebd-success-fg);
+    --bs-btn-bg: var(--ebd-success-bg);
+    --bs-btn-border-color: var(--ebd-success-border);
+    --bs-btn-hover-color: var(--ebd-success-fg-dark);
+    --bs-btn-hover-bg: var(--ebd-success-bg-hover);
+    --bs-btn-hover-border-color: var(--ebd-success-border-hover);
+    --bs-btn-active-color: var(--ebd-success-fg-dark);
+    --bs-btn-active-bg: var(--ebd-success-bg-hover);
+    --bs-btn-active-border-color: var(--ebd-success-border-hover);
+  }
+
+  /* Warning button: beige surface, recessive — navigational/neutral action */
+  .btn-warning {
+    --bs-btn-color: var(--ebd-light-base2);
+    --bs-btn-bg: var(--ebd-dark-lighter);
+    --bs-btn-border-color: var(--ebd-dark-darker);
+    --bs-btn-hover-color: var(--ebd-light-base);
+    --bs-btn-hover-bg: var(--ebd-dark-lighter2);
+    --bs-btn-hover-border-color: var(--ebd-dark-darker);
+    --bs-btn-active-color: var(--ebd-light-base);
+    --bs-btn-active-bg: var(--ebd-dark-lighter2);
+    --bs-btn-active-border-color: var(--ebd-dark-darker);
+  }
+
+  /* Danger button: pale rose surface, dark reddish text */
+  .btn-danger {
+    --bs-btn-color: var(--ebd-danger-fg);
+    --bs-btn-bg: var(--ebd-danger-bg);
+    --bs-btn-border-color: var(--ebd-danger-border);
+    --bs-btn-hover-color: var(--ebd-danger-fg-dark);
+    --bs-btn-hover-bg: var(--ebd-danger-bg-hover);
+    --bs-btn-hover-border-color: var(--ebd-danger-border-hover);
+    --bs-btn-active-color: var(--ebd-danger-fg-dark);
+    --bs-btn-active-bg: var(--ebd-danger-bg-hover);
+    --bs-btn-active-border-color: var(--ebd-danger-border-hover);
+  }
+
   .btn {
     &:focus-visible {
-      box-shadow: 0 0 0 0.25rem rgba(122, 92, 166, 0.28);
+      box-shadow: 0 0 0 0.25rem rgba(107, 66, 38, 0.28);
     }
 
     &:disabled {
       background-color: var(--ebd-gray);
       border-color: var(--ebd-gray);
     }
+  }
+
+  .toast {
+    --bs-toast-bg: var(--ebd-dark-lighter);
+    --bs-toast-border-color: var(--ebd-dark-darker);
+    --bs-toast-box-shadow: none;
+    --bs-toast-header-color: var(--ebd-light-base);
+    --bs-toast-header-bg: var(--ebd-dark-lighter);
+    --bs-toast-header-border-color: var(--ebd-dark-darker);
+
+    .btn-close {
+      filter: none;
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2016%2016%27%20fill%3D%27%232a2520%27%3E%3Cpath%20d%3D%27M.293.293a1%201%200%200%201%201.414%200L8%206.586%2014.293.293a1%201%200%201%201%201.414%201.414L9.414%208l6.293%206.293a1%201%200%200%201-1.414%201.414L8%209.414l-6.293%206.293a1%201%200%200%201-1.414-1.414L6.586%208%20.293%201.707a1%201%200%200%201%200-1.414z%27%2F%3E%3C%2Fsvg%3E");
+    }
+  }
+
+  .toast.bg-success {
+    background-color: var(--ebd-success-bg) !important;
+    color: var(--ebd-light-base);
+    --bs-toast-bg: var(--ebd-success-bg);
+    --bs-toast-border-color: var(--ebd-success-border);
+    --bs-toast-header-bg: var(--ebd-success-bg);
+    --bs-toast-header-color: var(--ebd-light-base);
+    --bs-toast-header-border-color: var(--ebd-success-header-border);
+  }
+
+  .toast.bg-danger {
+    background-color: var(--ebd-danger-bg) !important;
+    color: var(--ebd-light-base);
+    --bs-toast-bg: var(--ebd-danger-bg);
+    --bs-toast-border-color: var(--ebd-danger-border);
+    --bs-toast-header-bg: var(--ebd-danger-bg);
+    --bs-toast-header-color: var(--ebd-light-base);
+    --bs-toast-header-border-color: var(--ebd-danger-header-border);
   }
 
   .form-control {
@@ -174,7 +265,7 @@
 
     &:focus {
       border-color: var(--ebd-theme);
-      box-shadow: 0 0 0 0.25rem rgba(122, 92, 166, 0.22);
+      box-shadow: 0 0 0 0.25rem rgba(107, 66, 38, 0.22);
     }
   }
 
@@ -187,7 +278,7 @@
 
     &:focus {
       border-color: var(--ebd-theme);
-      box-shadow: 0 0 0 0.25rem rgba(122, 92, 166, 0.22);
+      box-shadow: 0 0 0 0.25rem rgba(107, 66, 38, 0.22);
     }
   }
 }

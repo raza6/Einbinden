@@ -3,7 +3,6 @@ import './BookAdd.scss';
 import { GenProps } from '../../types/generic';
 import { Badge, Button, Col, Form, InputGroup, OverlayTrigger, Tab, Tabs, Toast, ToastContainer, Tooltip, TooltipProps } from 'react-bootstrap';
 import { BarcodeScanner, DetectedBarcode } from 'react-barcode-scanner';
-import 'react-barcode-scanner/polyfill';
 import BookService from '../../services/bookService';
 import { FiHelpCircle, FiPlus } from 'react-icons/fi';
 import { JSX } from 'react/jsx-runtime';

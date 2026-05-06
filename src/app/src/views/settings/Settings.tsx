@@ -74,7 +74,7 @@ function Settings(props: GenProps) {
             <div id="infoWrapper">
               <div id="userWrapper">
                 <Image alt="User avatar" src={user?.avatar}></Image>
-                <h2>Hi {user?.name} 😀</h2>
+                <h2>Hi {user?.name}</h2>
               </div>
               <div id="loginStatus">
                 <span>You&apos;re logged-in through {renderOrigin(user?.origin)}</span>
