@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
 import { Book } from '../types/book';
 import './BookCard.scss';
 import { selectCover } from '../utils';
@@ -8,21 +7,20 @@ interface BookCardProps {
   book: Book;
 }
 
-function BookCard(props: BookCardProps) {
+function BookCard({ book }: BookCardProps) {
+  const tooltip = [book.subtitle, book.publisher, book.publishedDate].filter(Boolean).join(', ');
   return (
-    <li>
-      <Card>
-        <Card.Img variant="top" src={selectCover(props.book.cover)} />
-        <Card.ImgOverlay>
-          <Card.Body className="bookTitle">
-            <Card.Title title={`${props.book.title} (${[props.book.subtitle, props.book.publisher, props.book.publishedDate].filter(v => !!v).join(', ')})`}>
-              {props.book.title}{props.book.subtitle ? ` (${props.book.subtitle})` : ''}
-            </Card.Title>
-            <Card.Subtitle>{props.book.authors.join(', ')}</Card.Subtitle>
-          </Card.Body>
-        </Card.ImgOverlay>
-      </Card>
-    </li>
+    <div className="book-card" title={tooltip ? `${book.title} (${tooltip})` : book.title}>
+      <img
+        src={selectCover(book.cover)}
+        alt={book.title}
+        loading="lazy"
+      />
+      <div className="book-card-fence">
+        <span className="book-card-title">{book.title}{book.subtitle ? ` (${book.subtitle})` : ''}</span>
+        <span className="book-card-author">{book.authors.join(', ')}</span>
+      </div>
+    </div>
   );
 }
 

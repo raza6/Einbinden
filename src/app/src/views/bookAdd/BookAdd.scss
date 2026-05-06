@@ -17,11 +17,10 @@
   }
 
   ul {
-    --bs-body-bg: var(--ebd-light-base);
-    --bs-border-color: var(--ebd-light-base);
-    --bs-nav-link-hover-color: var(--ebd-light-base2);
-    --bs-secondary-bg: var(--ebd-light-base);
-
+    --bs-body-bg: var(--ebd-dark-lighter);
+    --bs-border-color: var(--ebd-dark-darker);
+    --bs-nav-link-hover-color: var(--ebd-theme);
+    --bs-secondary-bg: var(--ebd-dark-lighter);
   }
   
   .tab-content {
@@ -47,9 +46,6 @@
           color: inherit;
         }
 
-        button {
-          border: 1px solid var(--ebd-dark-lighter);
-        }
       }
     }
   }
@@ -58,13 +54,9 @@
     margin: 12px;
     
     .toast-header {
-      --bs-toast-header-bg: rgba(33, 37, 41, 0.85);
-      --bs-toast-header-color: var(--bs-toast-color);
+      --bs-toast-header-bg: rgba(237, 228, 214, 0.95);
+      --bs-toast-header-color: var(--ebd-light-base);
       justify-content: space-between;
-  
-      button {
-        filter: invert(1);
-      }
     }
   }
 }

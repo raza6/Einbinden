@@ -16,9 +16,10 @@ input[type="number"] {
 
 #navbar {
   height: 110px;
-  border-bottom: 1px solid var(--mp-dark-lighter);
+  margin-left: 0;
+  border-bottom: 1px solid var(--ebd-dark-darker);
   overflow: hidden;
-  background-color: var(--mp-dark-base);
+  background-color: var(--ebd-dark-lighter);
   z-index: 10;
 
   > * {
@@ -27,6 +28,7 @@ input[type="number"] {
   
   a.mainTitleWrapper {
     display: flex;
+    padding-left: 0;
     color: inherit;
     gap: 16px;
     

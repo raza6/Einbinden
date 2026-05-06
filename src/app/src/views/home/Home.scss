@@ -2,78 +2,158 @@
 @import '@bootstrap/scss/variables';
 @import '@bootstrap/scss/mixins';
 
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 #homeWrapper {
-    max-width: none;
-    --bs-gutter-x: 4.5rem;
+  max-width: none;
+  --bs-gutter-x: 4.5rem;
+  padding-top: 24px;
 
-    .loginButtonWrapper {
-        display: flex;
-        justify-content: center;
-        margin-top: 32px;
+  .login-prompt {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+
+    .search-form {
+      flex: 1;
+      min-width: 0;
     }
 
-    .formWrapper {
-        display: flex;
-        gap: 8px;
+    .share-btn {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+  }
 
-        form {
-            width: 100%;
-            margin-bottom: 16px;
-    
-            input::placeholder {
-                color: inherit;
-            }
-    
-            button {
-                border: 1px solid var(--ebd-dark-lighter);
-            }
-        }
+  .share-owner {
+    font-size: 0.875rem;
+    color: var(--ebd-light-darker);
+    margin: -8px 0 16px;
+  }
 
-        button.shareButton {
-            width: 90px;
-            height: fit-content;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-        }
+  .book-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+
+    a {
+      display: block;
+    }
+  }
+
+  .skeleton-card {
+    aspect-ratio: 21 / 29.7;
+    border-radius: 6px;
+    background: linear-gradient(
+      90deg,
+      var(--ebd-dark-lighter) 25%,
+      var(--ebd-dark-lighter2) 50%,
+      var(--ebd-dark-lighter) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      background: var(--ebd-dark-lighter);
+    }
+  }
+
+  .add-book-card {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--ebd-dark-lighter);
+    aspect-ratio: 21 / 29.7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s ease-out;
+
+    .add-book-card-icon {
+      width: 28px;
+      height: 28px;
+      color: var(--ebd-light-darker);
     }
 
-    #bookListWrapper {
-        list-style-type: none;
-        padding: 0;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 16px 16px;
-        
-        li {
-            height: fit-content;
-        }
+    .add-book-card-fence {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(0deg, #070707 0%, #000 90%, rgba(0, 0, 0, 0.74) 96%, transparent 100%);
+      padding: 8px;
     }
 
-    .pagination {
-        display: flex;
-        justify-content: center;
-
-        --bs-pagination-color: var(--ebd-light-base);
-        --bs-pagination-bg: var(--ebd-dark-base);
-        --bs-pagination-border-color: var(--ebd-light-base);
-        --bs-pagination-hover-color: var(--ebd-light-base);
-        --bs-pagination-hover-bg: var(--ebd-dark-lighter);
-        --bs-pagination-hover-border-color: var(--ebd-light-base);
-        --bs-pagination-focus-color: var(--ebd-dark-darker);
-        --bs-pagination-focus-bg: var(--ebd-light-darker);
-        --bs-pagination-focus-box-shadow: none;
-        --bs-pagination-active-color: var(--ebd-dark-base);
-        --bs-pagination-active-bg: var(--ebd-light-darker);
-        --bs-pagination-active-border-color: var(--ebd-light-base);
+    .add-book-card-label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ebd-on-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    
-    @include media-breakpoint-down(md) {
-        --bs-gutter-x: 1.5rem;
 
-        ul {
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-        }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
     }
+  }
+
+  .empty-state {
+    padding: 48px 0;
+    color: var(--ebd-light-darker);
+    font-size: 1rem;
+    margin: 0;
+
+    em {
+      color: var(--ebd-light-base);
+      font-style: normal;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+
+    --bs-pagination-color: var(--ebd-light-base);
+    --bs-pagination-bg: var(--ebd-dark-base);
+    --bs-pagination-border-color: var(--ebd-dark-darker);
+    --bs-pagination-hover-color: var(--ebd-light-base);
+    --bs-pagination-hover-bg: var(--ebd-dark-lighter);
+    --bs-pagination-hover-border-color: var(--ebd-dark-darker);
+    --bs-pagination-focus-color: var(--ebd-theme);
+    --bs-pagination-focus-bg: var(--ebd-lilac-wash);
+    --bs-pagination-focus-box-shadow: none;
+    --bs-pagination-active-color: var(--ebd-light-lighter);
+    --bs-pagination-active-bg: var(--ebd-theme);
+    --bs-pagination-active-border-color: var(--ebd-theme);
+  }
+
+  @include media-breakpoint-down(md) {
+    --bs-gutter-x: 1.5rem;
+
+    .book-grid {
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    }
+  }
 }

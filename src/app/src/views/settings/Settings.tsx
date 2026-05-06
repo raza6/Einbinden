@@ -89,11 +89,11 @@ function Settings(props: GenProps) {
             <div id="tagWrapper">
               <h2>Your tags :</h2>
               <Form className="m-3" onSubmit={handleTagSubmit}>
-                <InputGroup id="isbnWrapper">
+                <InputGroup id="tagWrapper">
                   <Form.Control
                     type="text" maxLength={64} placeholder="New tag" onInput={handleTagInput} value={newTag}
                   />
-                  <Button variant="outline-secondary" id="bookSearchInput" type="submit">
+                  <Button variant="outline-secondary" id="tagInput" type="submit">
                     <FiPlus />
                   </Button>
                 </InputGroup>
