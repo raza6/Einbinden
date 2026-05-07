@@ -14,4 +14,9 @@ interface BookSearchResponse {
   count: number;
 }
 
-export type { Book, BookSearchResponse };
+interface BookAddError {
+  error: 'INVALID_ISBN' | 'ALREADY_IN_COLLECTION' | 'FETCH_ERROR';
+  description: string;
+}
+
+export type { Book, BookSearchResponse, BookAddError };

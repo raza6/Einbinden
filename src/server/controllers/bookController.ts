@@ -4,6 +4,7 @@ import multer from 'multer';
 import { ensureAuthenticated } from '../utils/utils';
 import bookService from '../services/bookService';
 import { User } from '../types/user';
+import { BookAddError } from '../types/books';
 
 /**
  * API
@@ -75,7 +76,11 @@ const bookController = (serv: Express) => {
    */
     serv.post('/ebd/book/:isbn', ensureAuthenticated, async (req: Request, res: Response) => {
       const result = await bookService.addBookViaIsbn(req.params.isbn, (req.user as User).id.toString());
-      res.status(result ? 200 : 400).send(result);
+      if ((result as BookAddError).error !== undefined) {
+        res.status(400).json(result);
+      } else {
+        res.status(200).send(result);
+      }
     });
 
   /**

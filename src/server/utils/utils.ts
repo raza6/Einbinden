@@ -7,10 +7,10 @@ class NoCollectionError extends Error {
   }
 }
 
-class NoBookError extends Error {
-  constructor(message: string) {
+class BookFetchError extends Error {
+  constructor(message: string, public readonly services: { name: string; statusCode: number | undefined }[]) {
     super(message);
-    this.name = 'NoBookError';
+    this.name = 'BookFetchError';
   }
 }
 
@@ -21,4 +21,4 @@ function ensureAuthenticated(req: Request, res: Response, next: Function) {
   return res.sendStatus(401);
 }
 
-export { NoCollectionError, NoBookError, ensureAuthenticated };
+export { NoCollectionError, BookFetchError, ensureAuthenticated };

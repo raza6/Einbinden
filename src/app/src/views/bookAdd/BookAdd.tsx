@@ -9,6 +9,7 @@ import { JSX } from 'react/jsx-runtime';
 
 function BookAdd(props: GenProps) {
   const [showToast, setShowToast] = useState(false);
+  const [toastIsError, setToastIsError] = useState(false);
   const [toastTitle, setToastTitle] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [usedBarcodes, setUsedBarcodes] = useState<Array<string>>([]);
@@ -19,16 +20,17 @@ function BookAdd(props: GenProps) {
   }, []);
 
   const addBook = async (isbn: string): Promise<void> => {
-    const result = await BookService.add(isbn);
-    if (result) {
+    const { book, error } = await BookService.add(isbn);
+    if (book) {
+      setToastIsError(false);
       setToastTitle('Book added');
-      setToastMessage(result?.title);
-      setShowToast(true);
+      setToastMessage(book.title);
     } else {
+      setToastIsError(true);
       setToastTitle('Book not added');
-      setToastMessage('Try again');
-      setShowToast(true);
+      setToastMessage(error?.description ?? 'Unknown error');
     }
+    setShowToast(true);
   };
  
   const scanBarcode = async (barcodes: (DetectedBarcode & { quality?: number})[]): Promise<void> => {
@@ -44,13 +46,7 @@ function BookAdd(props: GenProps) {
 
   const handleISBNSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (manualISBN.length >= 10 && /\d[0-9-]+X?/.test(manualISBN)) {
-      addBook(manualISBN);
-    } else {
-      setShowToast(true);
-      setToastTitle('Wrong ISBN format');
-      setToastMessage('Try again');
-    }
+    addBook(manualISBN.replaceAll('-', ''));
   };
 
   const handleISBNInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -65,9 +61,7 @@ function BookAdd(props: GenProps) {
 
   return (
     <Col className="bookAddWrapper">
-      <div className="titleWrapper">
-        <h1>Add a book</h1>
-      </div>
+      <div className="titleWrapper"></div>
       <Tabs
         defaultActiveKey="scan"
         fill
@@ -88,7 +82,7 @@ function BookAdd(props: GenProps) {
           <Form className="m-3" onSubmit={handleISBNSubmit}>
             <InputGroup id="isbnWrapper">
               <Form.Control
-                type="text" pattern="\d*X?" inputMode="numeric" maxLength={50} placeholder="ISBN" onInput={handleISBNInput}
+                type="text" pattern="^(?:\d+-?)+X?$" inputMode="numeric" maxLength={50} placeholder="ISBN" onInput={handleISBNInput}
               />
               <Button variant="outline-secondary" id="bookSearchInput" type="submit">
                 <FiPlus />
@@ -98,7 +92,7 @@ function BookAdd(props: GenProps) {
         </Tab>
       </Tabs>
       <ToastContainer position="bottom-end">
-        <Toast onClose={() => setShowToast(false)} bg={toastMessage === 'Try again' ? 'danger' : 'success'} autohide delay={3000} show={showToast}>
+        <Toast onClose={() => setShowToast(false)} bg={toastIsError ? 'danger' : 'success'} autohide={!toastIsError} delay={3000} show={showToast}>
           <Toast.Header>
             <strong>{toastTitle}</strong>
           </Toast.Header>

@@ -1,23 +1,34 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { BookBase } from '../types/books';
-import { NoBookError } from '../utils/utils';
+import { BookFetchError } from '../utils/utils';
 
 export default class externalBooksService {
   public static async getByISBN(isbn: string): Promise<BookBase> {
-    try {
-      // Retrieve from all data points
-      const bookGoogle = await externalBooksService.retrieveGoogle(isbn);
-      const bookInventaire = await externalBooksService.retrieveInventaire(isbn);
-      const bookBNF = await externalBooksService.retrieveBNF(isbn);
-      const allBooks = [bookGoogle, bookInventaire, bookBNF].filter(v => v !== null);
-      if (allBooks.length > 0) {
-        return externalBooksService.mergeBookRetrieval(<BookBase[]>allBooks);
-      } else {
-        throw new NoBookError(`No reference found anywhere for ${isbn}`);
+    const serviceErrors: { name: string; statusCode: number | undefined }[] = [];
+
+    const tryRetrieve = async (serviceName: string, fetchFn: () => Promise<BookBase | null>): Promise<BookBase | null> => {
+      try {
+        return await fetchFn();
+      } catch (error) {
+        serviceErrors.push({ name: serviceName, statusCode: axios.isAxiosError(error) ? error.response?.status : undefined });
+        return null;
       }
-    } catch (error) { 
-      throw new NoBookError((<AxiosError>error).message);
+    };
+
+    const bookGoogle = await tryRetrieve('Google Books', () => externalBooksService.retrieveGoogle(isbn));
+    const bookInventaire = await tryRetrieve('inventaire.io', () => externalBooksService.retrieveInventaire(isbn));
+    const bookBNF = await tryRetrieve('BNF', () => externalBooksService.retrieveBNF(isbn));
+
+    const allBooks = [bookGoogle, bookInventaire, bookBNF].filter(v => v !== null);
+    if (allBooks.length > 0) {
+      try {
+        return externalBooksService.mergeBookRetrieval(allBooks);
+      } catch {
+        throw new BookFetchError(`No title found for ${isbn}`, serviceErrors);
+      }
+    } else {
+      throw new BookFetchError(`No reference found for ${isbn}`, serviceErrors);
     }
   }
 
@@ -104,7 +115,7 @@ export default class externalBooksService {
     };
 
     if (finalBook.title === '') {
-      throw new NoBookError(`No title found for ${finalBook.isbn}`);
+      throw new Error(`No title found for ${finalBook.isbn}`);
     } else {
       return finalBook;
     }

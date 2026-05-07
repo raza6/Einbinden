@@ -1,6 +1,6 @@
 import config from '../config';
 import { EHttpVerb, MainService } from './mainService';
-import { Book, BookSearchResponse } from '../types/book';
+import { Book, BookAddError, BookSearchResponse } from '../types/book';
 
 class BookService {
   public static async search(term: string, pageIndex = 0, pageSize = 200): Promise<BookSearchResponse> {
@@ -45,11 +45,15 @@ class BookService {
     return res;
   }
 
-  public static async add(isbn: string): Promise<Book> {
-    console.info('📫 - Add books');
-    const res = await MainService.handleApiCall(EHttpVerb.POST, `${config.API_URL}/book/${isbn}`);
+  public static async add(isbn: string): Promise<{ book: Book | null; error: BookAddError | null }> {
+    console.info(`📫 - Add books : ${isbn}`);
+    const res = await MainService.handleApiCallWithError<Book, BookAddError>(EHttpVerb.POST, `${config.API_URL}/book/${isbn}`, null);
     console.info('👏 - Add books', res);
-    return res;
+    if (res.error) {
+      return { book: null, error: res.error.body ?? { error: 'FETCH_ERROR', description: 'Unknown error' } };
+    } else {
+      return { book: res.data, error: null };
+    }
   }
 }
 

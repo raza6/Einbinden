@@ -1,31 +1,40 @@
 import MongoDB from "../mongo/mongo";
-import { Book, BookSearchResponse } from "../types/books";
-import { parseISBN } from "../utils/isbn";
+import { Book, BookAddError, BookSearchResponse } from "../types/books";
+import { parseISBN, ISBNParseError } from "../utils/isbn";
+import { BookFetchError } from "../utils/utils";
 import externalBooksService from "./externalBooksService";
 
 export default class bookService {
-  public static async addBookViaIsbn(isbn: string, userId: string): Promise<Book | null> {
+  public static async addBookViaIsbn(isbn: string, userId: string): Promise<Book | BookAddError> {
     try {
       const isbnParsed = parseISBN(isbn);
       const mongo = new MongoDB();
-      if (await mongo.checkBook(isbn, userId)) {
-        console.log(`🧨 Book already present (ISBN : ${isbn})`);
-        return null;
-      } else {
-        const bookBase = await externalBooksService.getByISBN(isbnParsed);
-        const book = {
-          ...bookBase,
-          userId,
-          addedAtCollectionTime: new Date(),
-          tags: [],
-          // lend: undefined,
-        };
-        await mongo.addBook(book);
-        return book;
+      const existing = await mongo.getBook(isbnParsed, userId);
+      if (existing) {
+        console.log(`🧨 Book already present (ISBN : ${isbnParsed})`);
+        return { error: 'ALREADY_IN_COLLECTION', description: `"${existing.title}" (${isbnParsed}) is already in your collection` };
       }
+      const bookBase = await externalBooksService.getByISBN(isbnParsed);
+      const book = {
+        ...bookBase,
+        userId,
+        addedAtCollectionTime: new Date(),
+        tags: [],
+        // lend: undefined,
+      };
+      await mongo.addBook(book);
+      return book;
     } catch (error) {
       console.log(`🧨 Book not added, reason : ${(<Error>error).message}`);
-      return null;
+      if (error instanceof ISBNParseError) {
+        return { error: 'INVALID_ISBN', description: `"${isbn}" is not a valid ISBN` };
+      } else if (error instanceof BookFetchError) {
+        return { error: 'FETCH_ERROR', description: `Failed to fetch book data from ${
+          error.services.map(s => `${s.name}${s.statusCode !== undefined ? ` (${s.statusCode})` : ''}`).join(', ')
+        }` };
+      } else {
+        return { error: 'FETCH_ERROR', description: (<Error>error).message };
+      }
     }
   }
 

@@ -32,9 +32,15 @@ interface BookRequest {
   pageIndex: number;
 }
 
+interface BookAddError {
+  error: 'INVALID_ISBN' | 'ALREADY_IN_COLLECTION' | 'FETCH_ERROR';
+  description: string;
+}
+
 export type {
   BookBase,
   Book,
   BookRequest,
-  BookSearchResponse
+  BookSearchResponse,
+  BookAddError
 };
