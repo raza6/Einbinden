@@ -60,6 +60,11 @@
       padding: 8px 12px;
       border-top: 1px solid var(--ebd-dark-darker);
       gap: 2px;
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
     }
 
     .history-title-row {
@@ -87,23 +92,42 @@
       &:hover {
         color: var(--ebd-light-base);
       }
-
-      svg {
-        width: 12px;
-        height: 12px;
-      }
     }
 
-    .history-title-edit {
+    .history-item-edit {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .input-group-text {
+        background-color: var(--ebd-dark-lighter2);
+        border-color: var(--ebd-dark-darker);
+        color: var(--ebd-light-base2);
+      }
+
       .history-title-input {
         font-size: 0.9rem;
         font-weight: 500;
       }
 
-      .history-edit-action {
-        svg {
-          width: 12px;
-          height: 12px;
+      .history-author-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .input-group {
+          flex: 1;
+        }
+      }
+
+      .history-item-edit-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .history-item-edit-actions {
+          display: flex;
+          gap: 4px;
         }
       }
     }

@@ -18,6 +18,7 @@ function BookAdd(props: GenProps) {
   const [addedBooks, setAddedBooks] = useState<Book[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [editingAuthors, setEditingAuthors] = useState<string[]>([]);
 
   useEffect(() => {
     props.pageName('Einbinden - Add a book');
@@ -58,18 +59,18 @@ function BookAdd(props: GenProps) {
     setManualISBN(e.currentTarget.value);
   };
 
-  const startTitleEdit = (idx: number) => {
+  const startEdit = (idx: number) => {
     setEditingIndex(idx);
     setEditingTitle(addedBooks[idx].title);
   };
 
-  const saveTitleEdit = async () => {
+  const saveEdit = async () => {
     if (editingIndex === null || !editingTitle.trim()) {
       setEditingIndex(null);
       return;
     }
     const book = addedBooks[editingIndex];
-    const updated = { ...book, title: editingTitle.trim() };
+    const updated = { ...book, title: editingTitle.trim(), authors: editingAuthors.filter(a => a.trim()) };
     const ok = await BookService.edit(updated);
     if (ok) {
       setAddedBooks(addedBooks.map((b, i) => i === editingIndex ? updated : b));
@@ -77,35 +78,73 @@ function BookAdd(props: GenProps) {
     setEditingIndex(null);
   };
 
-  const cancelTitleEdit = () => {
+  const cancelEdit = () => {
     setEditingIndex(null);
+  };
+
+  const updateEditAuthor = (i: number, author: string) => {
+    setEditingAuthors(editingAuthors.map((a, j) => j === i ? author : a));
+  };
+
+  const addEditAuthor = () => {
+    setEditingAuthors([...editingAuthors, '']);
+  };
+
+  const removeEditAuthor = (i: number) => {
+    setEditingAuthors(editingAuthors.filter((_, j) => j !== i));
   };
 
   const renderHistoryItem = (book: Book, idx: number) => (
     <li key={book.isbn}>
       {editingIndex === idx ? (
-        <InputGroup size="sm" className="history-title-edit">
+        <div className="history-item-edit">
+          <InputGroup size="sm">
+            <InputGroup.Text>Title</InputGroup.Text>
           <Form.Control
             className="history-title-input"
             value={editingTitle}
             onChange={(e) => setEditingTitle(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') saveTitleEdit();
-              if (e.key === 'Escape') cancelTitleEdit();
-            }}
+            onKeyDown={(e) => { if (e.key === 'Escape') cancelEdit(); }}
             autoFocus
             maxLength={256}
           />
-          <Button variant="success" className="history-edit-action" onClick={saveTitleEdit} title="Save"><FiCheck /></Button>
-          <Button variant="secondary" className="history-edit-action" onClick={cancelTitleEdit} title="Cancel"><FiX /></Button>
-        </InputGroup>
+          </InputGroup>
+          {editingAuthors.map((author, i) => (
+            <div className="history-author-row" key={i}>
+              <InputGroup size="sm">
+                <InputGroup.Text>Author</InputGroup.Text>
+                <Form.Control
+                  value={author}
+                  onChange={(e) => updateEditAuthor(i, e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Escape') cancelEdit(); }}
+                  maxLength={256}
+                />
+              </InputGroup>
+              {i === editingAuthors.length - 1 && (
+                <Button variant="secondary" size="sm" onClick={addEditAuthor}><FiPlus /></Button>
+              )}
+              {editingAuthors.length > 1 && (
+                <Button variant="secondary" size="sm" onClick={() => removeEditAuthor(i)}><FiX /></Button>
+              )}
+            </div>
+          ))}
+          <div className="history-item-edit-footer">
+            <span className="history-meta">{book.isbn}</span>
+            <div className="history-item-edit-actions">
+              <Button variant="success" size="sm" className="history-edit-action" onClick={saveEdit} title="Save"><FiCheck /></Button>
+              <Button variant="secondary" size="sm" className="history-edit-action" onClick={cancelEdit} title="Cancel"><FiX /></Button>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="history-title-row">
           <span className="history-title">{book.title}</span>
-          <Button variant="link" size="sm" className="history-edit-btn" onClick={() => startTitleEdit(idx)} title="Edit title"><FiEdit2 /></Button>
+          <Button variant="link" size="sm" className="history-edit-btn" onClick={() => startEdit(idx)} title="Edit"><FiEdit2 /></Button>
         </div>
       )}
-      <span className="history-meta">{book.isbn}{book.authors.length > 0 ? ` - ${book.authors.join(', ')}` : ''}</span>
+      {editingIndex !== idx && (
+        <span className="history-meta">{book.isbn}{book.authors.length > 0 ? ` - ${book.authors.join(', ')}` : ''}</span>
+      )}
     </li>
   );
 

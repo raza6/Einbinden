@@ -135,7 +135,7 @@ function BookEdit(props: GenProps) {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Authors</Form.Label>
-            {(book?.authors ?? ['']).map((author, i, arr) => (
+            {(book?.authors?.length ? book.authors : ['']).map((author, i, arr) => (
               <div key={i} className="authorRow">
                 <Form.Control
                   required
@@ -145,11 +145,11 @@ function BookEdit(props: GenProps) {
                   value={author}
                   onChange={(e) => handleAuthorChange(i, e.currentTarget.value)}
                 />
-                {arr.length > 1 && (
-                  <Button variant="secondary" className="authorRemove" onClick={() => handleRemoveAuthor(i)}><FiX /></Button>
-                )}
                 {i === arr.length - 1 && (
                   <Button variant="secondary" className="authorAdd" onClick={handleAddAuthor}><FiPlus /></Button>
+                )}
+                {arr.length > 1 && (
+                  <Button variant="secondary" className="authorRemove" onClick={() => handleRemoveAuthor(i)}><FiX /></Button>
                 )}
               </div>
             ))}
