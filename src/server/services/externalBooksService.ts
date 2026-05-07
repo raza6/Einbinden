@@ -16,11 +16,12 @@ export default class externalBooksService {
       }
     };
 
-    const bookGoogle = await tryRetrieve('Google Books', () => externalBooksService.retrieveGoogle(isbn));
-    const bookInventaire = await tryRetrieve('inventaire.io', () => externalBooksService.retrieveInventaire(isbn));
-    const bookBNF = await tryRetrieve('BNF', () => externalBooksService.retrieveBNF(isbn));
-
-    const allBooksRaw = [bookGoogle, bookInventaire, bookBNF];
+    const allBooksRaw = await Promise.all([
+      tryRetrieve('Google Books', () => externalBooksService.retrieveGoogle(isbn)),
+      tryRetrieve('inventaire.io', () => externalBooksService.retrieveInventaire(isbn)),
+      tryRetrieve('BNF', () => externalBooksService.retrieveBNF(isbn)),
+      tryRetrieve('Open Library', () => externalBooksService.retrieveOpenLibrary(isbn)),
+    ]);
     console.log('🧐 Data retrieved', allBooksRaw);
     const allBooks = allBooksRaw.filter(v => v !== null);
 
@@ -47,7 +48,7 @@ export default class externalBooksService {
         publishedDate: bookGoogle.volumeInfo.publishedDate,
         isbn: isbn,
         hasIsbn: true,
-        cover: undefined
+        cover: bookGoogle.volumeInfo.imageLinks?.extraLarge ?? bookGoogle.volumeInfo.imageLinks?.large ?? bookGoogle.volumeInfo.imageLinks?.medium ?? bookGoogle.volumeInfo.imageLinks?.small
       }
     } else {
       return null;
@@ -103,6 +104,25 @@ export default class externalBooksService {
       scrapper('[tag="702"] [code="a"]').each(function(i) { authors[i] += ` ${scrapper(this).text()}`});
     }
     return authors;
+  }
+
+  private static async retrieveOpenLibrary(isbn: string): Promise<BookBase | null> {
+    const response = await axios.get(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+    const book = response.data[`ISBN:${isbn}`];
+    if (book) {
+      return {
+        title: book.title,
+        subtitle: book.subtitle,
+        authors: book.authors?.map((a: { name: string }) => a.name),
+        publisher: book.publishers?.[0]?.name,
+        publishedDate: book.publish_date,
+        isbn: isbn,
+        hasIsbn: true,
+        cover: book.cover?.large ?? book.cover?.medium
+      };
+    } else {
+      return null;
+    }
   }
 
   private static mergeBookRetrieval(books: BookBase[]): BookBase {

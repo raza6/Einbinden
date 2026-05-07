@@ -1,7 +1,7 @@
 import { Request, Response, Express } from 'express';
-import { Jimp } from 'jimp';
 import multer from 'multer';
 import { ensureAuthenticated } from '../utils/utils';
+import { saveCoverToStatic } from '../utils/image';
 import bookService from '../services/bookService';
 import { User } from '../types/user';
 import { BookAddError } from '../types/books';
@@ -133,11 +133,7 @@ const bookController = (serv: Express) => {
           error = `Book ${isbn} does not exist for ${userId}`;
         } else {
           try {
-            const image = await Jimp.read(reqFile.buffer);
-            await image
-              .cover({ w: 400, h: 566 })
-              .write(`./static/img/${isbn}.jpg`);
-            book.cover = `/static/img/${isbn}.jpg`;
+            book.cover = await saveCoverToStatic(reqFile.buffer, isbn);
             await bookService.editBook(isbn, book, userId);
           } catch (err) {
             error = `Error while manipulating image : ${err}`;

@@ -5,7 +5,7 @@ import { Badge, Button, Col, Form, InputGroup, OverlayTrigger, Tab, Tabs, Toast,
 import { BarcodeScanner, DetectedBarcode } from 'react-barcode-scanner';
 import BookService from '../../services/bookService';
 import { Book } from '../../types/book';
-import { FiHelpCircle, FiPlus, FiEdit2, FiCheck, FiX } from 'react-icons/fi';
+import { FiHelpCircle, FiPlus, FiEdit2, FiCheck, FiX, FiLoader } from 'react-icons/fi';
 import { JSX } from 'react/jsx-runtime';
 
 function BookAdd(props: GenProps) {
@@ -15,6 +15,7 @@ function BookAdd(props: GenProps) {
   const [toastMessage, setToastMessage] = useState('');
   const [usedBarcodes, setUsedBarcodes] = useState<Array<string>>([]);
   const [manualISBN, setManualISBN] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
   const [addedBooks, setAddedBooks] = useState<Book[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
@@ -52,7 +53,9 @@ function BookAdd(props: GenProps) {
 
   const handleISBNSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addBook(manualISBN.replaceAll('-', ''));
+    setIsAdding(true);
+    await addBook(manualISBN.replaceAll('-', ''));
+    setIsAdding(false);
   };
 
   const handleISBNInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -178,8 +181,8 @@ function BookAdd(props: GenProps) {
               <Form.Control
                 type="text" pattern="^(?:\d+-?)+X?$" inputMode="numeric" maxLength={50} placeholder="ISBN" onInput={handleISBNInput}
               />
-              <Button variant="outline-secondary" id="bookSearchInput" type="submit">
-                <FiPlus />
+              <Button variant="outline-secondary" id="bookSearchInput" type="submit" disabled={isAdding}>
+                {isAdding ? <FiLoader className="spinIcon" /> : <FiPlus />}
               </Button>
             </InputGroup>
           </Form>

@@ -1,7 +1,9 @@
+import axios from "axios";
 import MongoDB from "../mongo/mongo";
 import { Book, BookAddError, BookSearchResponse } from "../types/books";
 import { parseISBN, ISBNParseError } from "../utils/isbn";
 import { BookFetchError } from "../utils/utils";
+import { saveCoverToStatic } from "../utils/image";
 import externalBooksService from "./externalBooksService";
 
 export default class bookService {
@@ -15,6 +17,9 @@ export default class bookService {
         return { error: 'ALREADY_IN_COLLECTION', description: `"${existing.title}" (${isbnParsed}) is already in your collection` };
       }
       const bookBase = await externalBooksService.getByISBN(isbnParsed);
+      if (bookBase.cover) {
+        bookBase.cover = await bookService.downloadCover(bookBase.cover, isbnParsed) ?? undefined;
+      }
       const book = {
         ...bookBase,
         userId,
@@ -83,6 +88,16 @@ export default class bookService {
       console.log('🧨 Book not deleted, reason : ISBN is empty');
     }
     return false;
+  }
+
+  private static async downloadCover(url: string, isbn: string): Promise<string | null> {
+    try {
+      const response = await axios.get(url, { responseType: 'arraybuffer' });
+      const buffer = Buffer.from(response.data);
+      return await saveCoverToStatic(buffer, isbn);
+    } catch {
+      return null;
+    }
   }
 
   public static async searchBook(

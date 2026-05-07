@@ -16,7 +16,8 @@
 
     img {
       flex: 1 1 0;
-      width: auto;
+      width: 100%;
+      min-width: 300px;
       max-width: 90vw;
       max-height: calc(90vh - 200px);
       aspect-ratio: 21/29.7;
