@@ -236,7 +236,7 @@ function Home(props: HomeProps) {
         <div className="toolbar">
           {!shareMode && (
             <Link to="/app/bookAdd">
-              <Button className="add-btn" title="Add a book" aria-label="Add a book">
+              <Button className="add-btn" title="Add a book">
                 <FiPlus aria-hidden="true" />
               </Button>
             </Link>
@@ -250,13 +250,13 @@ function Home(props: HomeProps) {
                 maxLength={50}
                 placeholder="Title, author..."
               />
-              <Button variant="outline-secondary" type="submit" aria-label="Search">
+              <Button variant="outline-secondary" type="submit">
                 <FiSearch />
               </Button>
             </InputGroup>
           </Form>
           {!shareMode && (
-            <Button className="share-btn" onClick={shareUrl} title="Copy share link" aria-label="Copy share link">
+            <Button className="share-btn" onClick={shareUrl} title="Copy share link">
               <FiShare2 aria-hidden="true" />
             </Button>
           )}

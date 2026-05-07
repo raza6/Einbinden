@@ -22,7 +22,7 @@ export default class bookService {
         tags: [],
         // lend: undefined,
       };
-      await mongo.addBook(book);
+      await mongo.addBook({ ...book }); // Prevent mongo from mutating book var with _id
       return book;
     } catch (error) {
       console.log(`🧨 Book not added, reason : ${(<Error>error).message}`);

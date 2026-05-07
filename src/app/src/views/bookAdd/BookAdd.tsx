@@ -4,7 +4,8 @@ import { GenProps } from '../../types/generic';
 import { Badge, Button, Col, Form, InputGroup, OverlayTrigger, Tab, Tabs, Toast, ToastContainer, Tooltip, TooltipProps } from 'react-bootstrap';
 import { BarcodeScanner, DetectedBarcode } from 'react-barcode-scanner';
 import BookService from '../../services/bookService';
-import { FiHelpCircle, FiPlus } from 'react-icons/fi';
+import { Book } from '../../types/book';
+import { FiHelpCircle, FiPlus, FiEdit2, FiCheck, FiX } from 'react-icons/fi';
 import { JSX } from 'react/jsx-runtime';
 
 function BookAdd(props: GenProps) {
@@ -14,6 +15,9 @@ function BookAdd(props: GenProps) {
   const [toastMessage, setToastMessage] = useState('');
   const [usedBarcodes, setUsedBarcodes] = useState<Array<string>>([]);
   const [manualISBN, setManualISBN] = useState('');
+  const [addedBooks, setAddedBooks] = useState<Book[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
 
   useEffect(() => {
     props.pageName('Einbinden - Add a book');
@@ -25,6 +29,7 @@ function BookAdd(props: GenProps) {
       setToastIsError(false);
       setToastTitle('Book added');
       setToastMessage(book.title);
+      setAddedBooks(prev => [book, ...prev]);
     } else {
       setToastIsError(true);
       setToastTitle('Book not added');
@@ -32,7 +37,7 @@ function BookAdd(props: GenProps) {
     }
     setShowToast(true);
   };
- 
+
   const scanBarcode = async (barcodes: (DetectedBarcode & { quality?: number})[]): Promise<void> => {
     console.log('Barcode detected');
     // @ts-ignore
@@ -53,6 +58,57 @@ function BookAdd(props: GenProps) {
     setManualISBN(e.currentTarget.value);
   };
 
+  const startTitleEdit = (idx: number) => {
+    setEditingIndex(idx);
+    setEditingTitle(addedBooks[idx].title);
+  };
+
+  const saveTitleEdit = async () => {
+    if (editingIndex === null || !editingTitle.trim()) {
+      setEditingIndex(null);
+      return;
+    }
+    const book = addedBooks[editingIndex];
+    const updated = { ...book, title: editingTitle.trim() };
+    const ok = await BookService.edit(updated);
+    if (ok) {
+      setAddedBooks(addedBooks.map((b, i) => i === editingIndex ? updated : b));
+    }
+    setEditingIndex(null);
+  };
+
+  const cancelTitleEdit = () => {
+    setEditingIndex(null);
+  };
+
+  const renderHistoryItem = (book: Book, idx: number) => (
+    <li key={book.isbn}>
+      {editingIndex === idx ? (
+        <InputGroup size="sm" className="history-title-edit">
+          <Form.Control
+            className="history-title-input"
+            value={editingTitle}
+            onChange={(e) => setEditingTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveTitleEdit();
+              if (e.key === 'Escape') cancelTitleEdit();
+            }}
+            autoFocus
+            maxLength={256}
+          />
+          <Button variant="success" className="history-edit-action" onClick={saveTitleEdit} title="Save"><FiCheck /></Button>
+          <Button variant="secondary" className="history-edit-action" onClick={cancelTitleEdit} title="Cancel"><FiX /></Button>
+        </InputGroup>
+      ) : (
+        <div className="history-title-row">
+          <span className="history-title">{book.title}</span>
+          <Button variant="link" size="sm" className="history-edit-btn" onClick={() => startTitleEdit(idx)} title="Edit title"><FiEdit2 /></Button>
+        </div>
+      )}
+      <span className="history-meta">{book.isbn}{book.authors.length > 0 ? ` - ${book.authors.join(', ')}` : ''}</span>
+    </li>
+  );
+
   const renderHelpScanTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & React.RefAttributes<HTMLDivElement>) => (
     <Tooltip className="helpTooltip" {...props}>
       If you can see the gaps between the stripes, it should scan successfuly
@@ -61,14 +117,13 @@ function BookAdd(props: GenProps) {
 
   return (
     <Col className="bookAddWrapper">
-      <div className="titleWrapper"></div>
       <Tabs
         defaultActiveKey="scan"
         fill
       >
-        <Tab eventKey="scan" title="Scan an ISBN">
-          <BarcodeScanner options={{ formats: ['ean_13'] }} onCapture={scanBarcode}/>
-          <OverlayTrigger 
+        <Tab eventKey="scan" title="Scan an ISBN" className="scan-pane">
+          <BarcodeScanner id="scannerTab" options={{ formats: ['ean_13'] }} onCapture={scanBarcode}/>
+          <OverlayTrigger
             placement="left-start"
             trigger={['hover', 'focus']}
             overlay={renderHelpScanTooltip}
@@ -91,6 +146,11 @@ function BookAdd(props: GenProps) {
           </Form>
         </Tab>
       </Tabs>
+      {addedBooks.length > 0 && (
+        <ul className="history-list">
+          {addedBooks.map(renderHistoryItem)}
+        </ul>
+      )}
       <ToastContainer position="bottom-end">
         <Toast onClose={() => setShowToast(false)} bg={toastIsError ? 'danger' : 'success'} autohide={!toastIsError} delay={3000} show={showToast}>
           <Toast.Header>

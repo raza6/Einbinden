@@ -20,7 +20,10 @@ export default class externalBooksService {
     const bookInventaire = await tryRetrieve('inventaire.io', () => externalBooksService.retrieveInventaire(isbn));
     const bookBNF = await tryRetrieve('BNF', () => externalBooksService.retrieveBNF(isbn));
 
-    const allBooks = [bookGoogle, bookInventaire, bookBNF].filter(v => v !== null);
+    const allBooksRaw = [bookGoogle, bookInventaire, bookBNF];
+    console.log('🧐 Data retrieved', allBooksRaw);
+    const allBooks = allBooksRaw.filter(v => v !== null);
+
     if (allBooks.length > 0) {
       try {
         return externalBooksService.mergeBookRetrieval(allBooks);
