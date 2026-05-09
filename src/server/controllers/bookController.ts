@@ -65,6 +65,26 @@ const bookController = (serv: Express) => {
   });
 
   /**
+   * @apiName BookAddRaw
+   * @apiGroup Book
+   * @api {POST} /ebd/book Add a book manually
+   * @apiDescription Adds a book directly from provided metadata, without ISBN lookup or cover handling
+   *
+   * @apiBody {Book} book The edited book as a full object
+   * @apiUse BookSuccess
+   * @apiError (400) {BookAddError} AlreadyInCollection Book is already in the user's collection
+   * @apiError (401) {null} UserNotAuthenticated
+   */
+  serv.post('/ebd/book', ensureAuthenticated, async (req: Request, res: Response) => {
+    const result = await bookService.addBookRaw(req.body.book, (req.user as User).id.toString());
+    if ((result as BookAddError).error !== undefined) {
+      res.status(400).json(result);
+    } else {
+      res.status(200).send(result);
+    }
+  });
+
+  /**
    * @apiName BookAddISBN
    * @apiGroup Book
    * @api {POST} /ebd/book/:isbn Try to add book via ISBN

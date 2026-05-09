@@ -55,6 +55,17 @@ class BookService {
       return { book: res.data, error: null };
     }
   }
+
+  public static async addRaw(book: Book): Promise<{ book: Book | null; error: BookAddError | null }> {
+    console.info('📫 - Add book raw');
+    const res = await MainService.handleApiCallWithError<Book, BookAddError>(EHttpVerb.POST, `${config.API_URL}/book`, { book });
+    console.info('👏 - Add book raw', res);
+    if (res.error) {
+      return { book: null, error: res.error.body ?? { error: 'UNKNOWN_ERROR', description: 'Unknown error' } };
+    } else {
+      return { book: res.data, error: null };
+    }
+  }
 }
 
 export default BookService;

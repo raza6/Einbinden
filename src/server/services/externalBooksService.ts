@@ -56,24 +56,53 @@ export default class externalBooksService {
   }
 
   private static async retrieveInventaire(isbn: string): Promise<BookBase | null> {
-    const responseInventaire = await axios.get(`https://inventaire.io/api/data?action=isbn&isbn=${isbn}`);
-    const bookInventaire = responseInventaire.data;
-    if (bookInventaire) {
-      const inventaireImg = await axios.get(`https://inventaire.io/api/entities?action=by-uris&uris=isbn:${isbn}&refresh=false`);
-      const imgUrl = inventaireImg.data?.entities?.[`isbn:${isbn}`]?.image?.url;
-      return {
-        title: bookInventaire.title,
-        subtitle: undefined,
-        authors: bookInventaire.authors,
-        publisher: undefined,
-        publishedDate: bookInventaire.publicationDate,
-        isbn: isbn,
-        hasIsbn: true,
-        cover: imgUrl !== undefined ? `https://inventaire.io${imgUrl}` : undefined
-      }
-    } else {
-      return null;
+    const responseInventaire = await axios.get(`https://inventaire.io/api/entities/by-uris?uris=isbn:${isbn}&relatives=wdt:P50|wdt:P58|wdt:P629|wdt:P123`);  
+    const data = responseInventaire.data;
+    const editionEntity = data.entities?.[data.redirects?.[`isbn:${isbn}`]];
+    if (!editionEntity) { 
+      return null
+    };
+
+    const title = editionEntity.claims?.['wdt:P1476']?.[0] ?? editionEntity.labels?.fromclaims;
+    const publishedDate = editionEntity.claims?.['wdt:P577']?.[0];
+    const imgUrl: string | undefined = editionEntity.image?.url;
+
+    const workWdUri: string | undefined = editionEntity.claims?.['wdt:P629']?.[0];
+    const workEntity = workWdUri ? data.entities?.[workWdUri] : undefined;
+    const sourceEntity = workEntity ?? editionEntity;
+    const allAuthorWdUris: string[] = [
+      ...(sourceEntity.claims?.['wdt:P50'] ?? []),
+      ...(sourceEntity.claims?.['wdt:P58'] ?? []),
+      ...(sourceEntity.claims?.['wdt:P110'] ?? []),
+    ];
+    const authors = allAuthorWdUris
+      .map((uri: string) => externalBooksService.extractInventaireLabel(data.entities?.[uri]?.labels))
+      .filter(name => name !== undefined);
+
+    const publisherWdUri: string | undefined = editionEntity.claims?.['wdt:P123']?.[0];
+    const publisher = externalBooksService.extractInventaireLabel(data.entities?.[publisherWdUri ?? '']?.labels);
+
+    console.log(editionEntity)
+    console.log(editionEntity.image)
+    console.log(imgUrl)
+
+    return {
+      title,
+      subtitle: undefined,
+      authors,
+      publisher,
+      publishedDate,
+      isbn,
+      hasIsbn: true,
+      cover: imgUrl !== undefined ? `https://inventaire.io${imgUrl}` : undefined
+    };
+  }
+
+  private static extractInventaireLabel(labels: Record<string, string> | undefined): string | undefined {
+    if (!labels) {
+      return undefined;
     }
+    return labels['fr'] ?? labels['en'] ?? labels['fromclaims'] ?? Object.values(labels)[0];
   }
 
   private static async retrieveBNF(isbn: string): Promise<BookBase | null> {

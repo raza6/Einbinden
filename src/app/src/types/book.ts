@@ -3,7 +3,7 @@ interface Book {
   subtitle?: string;
   authors: string[];
   publisher?: string;
-  publishedDate: Date;
+  publishedDate?: Date;
   isbn: string;
   cover: string;
   tags: string[];
@@ -15,7 +15,7 @@ interface BookSearchResponse {
 }
 
 interface BookAddError {
-  error: 'INVALID_ISBN' | 'ALREADY_IN_COLLECTION' | 'FETCH_ERROR';
+  error: 'INVALID_ISBN' | 'ALREADY_IN_COLLECTION' | 'FETCH_ERROR' | 'UNKNOWN_ERROR';
   description: string;
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Book } from '../types/book';
+import { Book } from '../../types/book';
 import './BookCard.scss';
-import { selectCover } from '../utils';
+import { selectCover } from '../../utils';
 
 interface BookCardProps {
   book: Book;

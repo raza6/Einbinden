@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './BookAdd.scss';
+import BookManualForm from './BookManualForm';
 import { GenProps } from '../../types/generic';
 import { Badge, Button, Col, Form, InputGroup, OverlayTrigger, Tab, Tabs, Toast, ToastContainer, Tooltip, TooltipProps } from 'react-bootstrap';
 import { BarcodeScanner, DetectedBarcode } from 'react-barcode-scanner';
@@ -181,11 +182,14 @@ function BookAdd(props: GenProps) {
               <Form.Control
                 type="text" pattern="^(?:\d+-?)+X?$" inputMode="numeric" maxLength={50} placeholder="ISBN" onInput={handleISBNInput}
               />
-              <Button variant="outline-secondary" id="bookSearchInput" type="submit" disabled={isAdding}>
+              <Button variant="outline-secondary" id="bookAddISBNInput" type="submit" disabled={isAdding}>
                 {isAdding ? <FiLoader className="spinIcon" /> : <FiPlus />}
               </Button>
             </InputGroup>
           </Form>
+        </Tab>
+        <Tab eventKey="manual" title="Add manually">
+          <BookManualForm onBookAdded={(book) => setAddedBooks(prev => [book, ...prev])} />
         </Tab>
       </Tabs>
       {addedBooks.length > 0 && (

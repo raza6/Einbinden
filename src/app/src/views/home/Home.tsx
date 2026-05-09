@@ -5,7 +5,7 @@ import './Home.scss';
 import { GenProps } from '../../types/generic';
 import AuthContext from '../../components/AuthContext';
 import { Book } from '../../types/book';
-import BookCard from '../../components/BookCard';
+import BookCard from '../../components/BookCard/BookCard';
 import BookService from '../../services/bookService';
 import { FiSearch, FiShare2, FiPlus } from 'react-icons/fi';
 import { useDebounce, useHasChanged } from '../../utils';

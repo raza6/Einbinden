@@ -17,7 +17,7 @@ export default class bookService {
         return { error: 'ALREADY_IN_COLLECTION', description: `"${existing.title}" (${isbnParsed}) is already in your collection` };
       }
       const bookBase = await externalBooksService.getByISBN(isbnParsed);
-      if (bookBase.cover) {
+      if (bookBase.cover && !bookBase.cover.includes('inventaire.io')) {
         bookBase.cover = await bookService.downloadCover(bookBase.cover, isbnParsed) ?? undefined;
       }
       const book = {
@@ -43,11 +43,40 @@ export default class bookService {
     }
   }
 
+  public static async addBookRaw(bookData: Book, userId: string): Promise<Book | BookAddError> {
+    try {
+      const isbnParsed = parseISBN(bookData.isbn);
+      const mongo = new MongoDB();
+      const existing = await mongo.getBook(isbnParsed, userId);
+      if (existing) {
+        console.log(`🧨 Book already present (ISBN : ${isbnParsed})`);
+        return { error: 'ALREADY_IN_COLLECTION', description: `"${existing.title}" (${isbnParsed}) is already in your collection` };
+      }
+      const book: Book = {
+        ...bookData,
+        isbn: isbnParsed,
+        cover: undefined,
+        userId,
+        addedAtCollectionTime: new Date(),
+        tags: [],
+      };
+      await mongo.addBook({ ...book });
+      return book;
+    } catch (error) {
+      console.log(`🧨 Book not added (raw), reason : ${(<Error>error).message}`);
+      if (error instanceof ISBNParseError) {
+        return { error: 'INVALID_ISBN', description: `"${bookData.isbn}" is not a valid ISBN` };
+      }
+      return { error: 'UNKNOWN_ERROR', description: (<Error>error).message };
+    }
+  }
+
   public static async editBook(isbn: string, book: Book, userId: string): Promise<boolean> {
     try {
       const mongo = new MongoDB();
       if (book.userId === userId && await mongo.checkBook(isbn, userId)) {
-        await mongo.editBook(book, userId);
+        const existing = await mongo.getBook(isbn, userId);
+        await mongo.editBook({ ...book, tags: existing.tags }, userId);
         return true;
       } else {
         console.log(`🧨 Book not present (ISBN : ${isbn})`);

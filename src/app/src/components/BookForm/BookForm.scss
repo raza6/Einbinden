@@ -1,0 +1,101 @@
+@import '@bootstrap/scss/functions';
+@import '@bootstrap/scss/variables';
+@import '@bootstrap/scss/mixins';
+
+.coverWrapper {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  img {
+    width: 100%;
+    min-width: 200px;
+    max-width: 90vw;
+    max-height: calc(90vh - 200px);
+    aspect-ratio: 21/29.7;
+    object-fit: contain;
+  }
+
+  .isbnRef {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--ebd-light-darker);
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}
+
+.bookFormMain {
+  flex: 2 1 0;
+  min-width: 400px;
+
+  @media (width <= 500px) {
+    min-width: 300px;
+  }
+
+  input::placeholder {
+    color: #847c6d;
+  }
+
+  .authorRow {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .authorAdd,
+    .authorRemove {
+      flex-shrink: 0;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .bookFormCoverButton {
+    padding: 0;
+    margin-left: 8px;
+
+    label {
+      padding: 8px 12px;
+      cursor: pointer;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    input[type='file'] {
+      display: none;
+    }
+  }
+
+  .buttonWrapper {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      svg {
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+.toast {
+  margin: 12px;
+
+  .toast-header {
+    justify-content: space-between;
+  }
+}

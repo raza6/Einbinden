@@ -224,6 +224,13 @@
       background-color: var(--ebd-gray);
       border-color: var(--ebd-gray);
     }
+
+    &:disabled:has(.spinIcon) {
+      --bs-btn-disabled-opacity: 1;
+      color: var(--ebd-light-base);
+      background-color: var(--ebd-success-bg);
+      border-color: var(--ebd-success-border);
+    }
   }
 
   .toast {
@@ -283,6 +290,14 @@
       box-shadow: 0 0 0 0.25rem rgba(107, 66, 38, 0.22);
     }
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinIcon {
+  animation: spin 0.8s linear infinite;
 }
 
 body {

@@ -33,7 +33,7 @@ interface BookRequest {
 }
 
 interface BookAddError {
-  error: 'INVALID_ISBN' | 'ALREADY_IN_COLLECTION' | 'FETCH_ERROR';
+  error: 'INVALID_ISBN' | 'ALREADY_IN_COLLECTION' | 'FETCH_ERROR' | 'UNKNOWN_ERROR';
   description: string;
 }
 

@@ -48,6 +48,10 @@ const getRandomOfList = (list: Array<string>): string => {
 }
 
 const selectCover = (coverUrl: string): string => {
+  console.log(coverUrl)
+  if(coverUrl === null) {
+    return '';
+  }
   if (coverUrl === '') {
     return `${import.meta.env.BASE_URL}nocover.png`;
   } else if (coverUrl.startsWith('/static')) {
